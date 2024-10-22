@@ -34,9 +34,6 @@ class QueryStudioPlugin extends QueryStudioPluginBase {
     });
     const button = new Button(buttonCfg);
 
-    // cast(StudioAppsImpl, studioApps._).getSubAppLauncherRegistry().registerSubAppLauncher("queryTool", (): void => {
-    //   typeof button.handler !== "string" && button.handler(button, null);
-    // });
     studioApps._.getShortcutRunnerRegistry().registerShortcutRunner({ cmKey: "queryTool" }, (): void => {
       typeof button.handler !== "string" && button.handler(button, null);
     });
