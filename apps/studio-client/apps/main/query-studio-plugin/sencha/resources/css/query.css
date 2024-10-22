@@ -1,0 +1,58 @@
+/* Query Tool CSS*/
+.query-tool .query-control input {}
+.query-tool .query-control .cm-core-icons {
+  color: #ffffff;
+}
+.query-tool .query-control.x-btn-over .cm-core-icons {
+  color: #3d4242;
+}
+.query-tool .query-label {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.query-tool .query-paging-toolbar .query-control {
+  width: auto !important;
+  min-width: auto !important;
+  left: auto !important;
+  float: left !important;
+  position: relative !important;
+}
+.query-tool .query-paging-toolbar .x-toolbar-separator {
+  margin: 0 8px 0 12px !important;
+  left: auto !important;
+  float: left !important;
+  position: relative !important;
+}
+.query-tool .query-paging-toolbar .query-control .cm-core-icons {
+  color: #3d4242;
+}
+.query-tool .query-paging-toolbar .query-label {
+  margin: 0 8px 0 12px !important;
+  color: #3d4242;
+  left: auto !important;
+  float: left !important;
+  position: relative !important;
+}
+
+.query-tool .query-condition .x-panel-body {
+  background-color: #efefef;
+}
+
+.query-tool .query-toolbar .tooltip-base {
+  padding: 0 6px;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+}
+.query-tool .query-toolbar .tooltip-base:hover {
+  background-color:#c8c6c6;
+  color: #000000;
+  border-color:#c8c6c6;
+}
+.query-tool .query-toolbar .x-form-checkbox::before {
+  color: #ffffff;
+}
+.query-tool .query-toolbar .x-item-disabled .x-form-checkbox::before {
+  color: #c8c6c6;
+}
+

@@ -1,0 +1,196 @@
+<content>
+  <folder id="1" name="" placeApproved="true" published="true" modificationDate="2009-06-01T20:59:42.000+01:00">
+    <folder id="3" name="Content Test">
+      <document id="2" type="CMArticle" name="notSearchable" modificationDate="2009-06-01T20:59:42.000+01:00">
+        <version number="1">
+          <intProperty name="notSearchable" value="1"/>
+          <stringProperty name="teaserTitle" value="teaserTitle"/>
+          <stringProperty name="title" value="title"/>
+          <markupProperty name="teaserText" url="2teaserText.xml" grammar="coremedia-richtext-1.0"/>
+          <stringProperty name="locale" value="en"/>
+          <stringProperty name="htmlDescription" value="My HTML Description"/>
+          <stringProperty name="htmlTitle" value="My HTML Title"/>
+          <markupProperty name="detailText" url="2detailText.xml" grammar="coremedia-richtext-1.0"/>
+          <linkProperty name="subjectTaxonomy">
+            <link id="76"/>
+            <link id="78"/>
+          </linkProperty>
+        </version>
+      </document>
+      <document id="4" type="CMArticle" name="isSearchable" modificationDate="2004-01-01T06:00:00+01:00"
+                published="true" placeApproved="true" creator="0">
+        <version number="1">
+          <intProperty name="notSearchable" value="0"/>
+          <markupProperty name="localSettings" url="4settings.xml" grammar="coremedia-struct-2008"/>
+          <stringProperty name="title" value="title"/>
+          <stringProperty name="locale" value="de"/>
+          <linkProperty name="master">
+            <link id="2"/>
+          </linkProperty>
+          <linkProperty name="contexts">
+            <link id="14"/>
+          </linkProperty>
+          <dateProperty name="extDisplayedDate" value="2010-01-01T06:00:00+01:00"/>
+          <dateProperty name="validFrom" value="2010-01-01T06:00:00+01:00"/>
+          <dateProperty name="validTo" value="2011-01-01T06:00:00+01:00"/>
+          <stringProperty name="keywords" value="articlekey,articleword"/>
+          <linkProperty name="pictures">
+            <link id="16"/>
+            <link id="18"/>
+          </linkProperty>
+          <linkProperty name="related">
+            <link id="2"/>
+          </linkProperty>
+          <linkProperty name="subjectTaxonomy">
+            <link id="76"/>
+            <link id="78"/>
+          </linkProperty>
+          <linkProperty name="locationTaxonomy">
+            <link id="72"/>
+            <link id="74"/>
+          </linkProperty>
+        </version>
+      </document>
+      <document id="6" type="CMArticle" name="searchableNotSet">
+        <version number="1">
+          <markupProperty name="localSettings" url="6settings.xml" grammar="coremedia-struct-2008"/>
+          <linkProperty name="linkedSettings">
+            <link id="800"/>
+            <link id="8"/>
+          </linkProperty>
+        </version>
+      </document>
+      <document id="40" type="CMArticle" name="article1">
+        <version number="1">
+          <stringProperty name="teaserTitle" value="article1"/>
+        </version>
+      </document>
+      <document id="42" type="CMArticle" name="article2">
+        <version number="1">
+          <stringProperty name="teaserTitle" value="article2"/>
+        </version>
+      </document>
+      <document id="44" type="CMArticle" name="article3">
+        <version number="1">
+          <stringProperty name="teaserTitle" value="article3"/>
+        </version>
+      </document>
+      <!-- Subject Taxonomy Test-->
+      <document id="76" name="Sport" type="CMTaxonomy">
+        <version number="1">
+          <stringProperty name="value" value="Sport"/>
+          <linkProperty name="children">
+            <link id="78"/>
+          </linkProperty>
+        </version>
+      </document>
+      <document id="78" name="Motorsport" type="CMTaxonomy">
+        <version number="1">
+          <stringProperty name="value" value="Motorsport"/>
+          <linkProperty name="children">
+            <link id="80"/>
+          </linkProperty>
+        </version>
+      </document>
+      <document id="80" name="Formula 1" type="CMTaxonomy">
+        <version number="1">
+          <stringProperty name="value" value="Formula 1"/>
+          <linkProperty name="children"/>
+        </version>
+      </document>
+    </folder>
+  </folder>
+  <folder id="113" name="editorial">
+    <folder id="1131" name="content">
+      <folder id="11311" name="forChannelA1">
+        <document id="113110" name="docInContextA1" type="CMArticle">
+          <version number="1">
+            <linkProperty name="contexts">
+              <link id="10022"/>
+            </linkProperty>
+          </version>
+        </document>
+        <folder id="11313" name="forChannelA11">
+          <document id="1131110" name="docInContextA11" type="CMArticle">
+            <version number="1">
+              <linkProperty name="contexts">
+                <link id="100222"/>
+                <link id="10124"/>
+                <!--<link id="1022"/>-->
+              </linkProperty>
+            </version>
+          </document>
+        </folder>
+        <folder id="11315" name="forChannelB">
+          <document id="113150" name="_folderProperties" type="CMFolderProperties">
+            <version number="1">
+              <linkProperty name="contexts">
+                <link id="1012"/>
+              </linkProperty>
+            </version>
+          </document>
+          <document id="113152" name="docInContextB" type="CMArticle">
+            <version number="1"/>
+          </document>
+          <folder id="113151" name="bla">
+            <document id="1131510" name="_folderProperties" type="CMFolderProperties">
+              <version number="1">
+                <linkProperty name="contexts">
+                  <link id="1002"/>
+                  <link id="101222"/>
+                </linkProperty>
+              </version>
+            </document>
+            <folder id="1131511" name="bla">
+              <folder id="11315111" name="bla">
+                <document id="113151110" name="docInContextAandContextB11" type="CMArticle">
+                  <version number="1"/>
+                </document>
+              </folder>
+            </folder>
+          </folder>
+
+
+        </folder>
+      </folder>
+    </folder>
+  </folder>
+  <folder id="201" name="Taxonomies">
+    <document id="206" type="CMArticle" name="nameMatchingTest">
+      <version number="1">
+        <stringProperty name="teaserTitle" value="Sport"/>
+        <stringProperty name="title" value="Volleyball"/>
+        <stringProperty name="locale" value="en"/>
+      </version>
+    </document>
+  </folder>
+  <folder id="999" name="Sites">
+    <folder id="997" name="Site B">
+      <document id="886" type="CMArticle" name="mobileArticle">
+        <version number="1">
+          <stringProperty name="segment" value="foo"/>
+        </version>
+      </document>
+    </folder>
+  </folder>
+  <folder name="AnalyticsRetrievalTestFolder" id="12345">
+    <document id="1234" name="alx1" type="CMArticle" published="true" publicationDate="2013-06-06T21:59:33.000+01:00">
+      <version number="1"/>
+      <version number="2"/>
+      <version number="3"/>
+    </document>
+    <folder name="AnalyticsRetrievalTestSubFolder" id="54321">
+      <document id="3328" name="alx2" type="CMArticle" published="true"
+                publicationDate="2013-06-06T20:59:00.000+01:00">
+        <version number="1"/>
+        <version number="2"/>
+        <version number="3"/>
+        <version number="4"/>
+        <version number="5"/>
+        <version number="6"/>
+        <version number="7"/>
+        <version number="8"/>
+      </document>
+    </folder>
+  </folder>
+</content>
