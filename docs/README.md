@@ -1,4 +1,4 @@
-# Content Hub Adapter for YouTube Manual
+# Query Service
 
 ## Table of Contents
 
@@ -8,7 +8,7 @@
 
 1. [Installation](installation.md)
 
-    How to administrate Content Hub Adapter for YouTube extension (especially in CoreMedia Studio).
+    how to install (especially in CoreMedia Studio).
 
 1. [Contribute](contribute.md)
 
