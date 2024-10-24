@@ -14,8 +14,8 @@
   <properties>
     <coremedia.project.extension.for>studio-lib</coremedia.project.extension.for>
     <maven.compiler.release>17</maven.compiler.release>
-    <cm.studio-server.core.version>2401.3</cm.studio-server.core.version>
-    <cm.common.core.version>2401.3</cm.common.core.version>
+    <cm.studio-server.core.version>2401.4</cm.studio-server.core.version>
+    <cm.common.core.version>2401.4</cm.common.core.version>
   </properties>
 
   <repositories>
