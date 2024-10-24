@@ -10,6 +10,8 @@ import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import QueryStudioPluginBase from "./QueryStudioPluginBase";
 import QueryToolTab from "./app/QueryToolTab";
 import QueryTool_properties from "./properties/QueryTool_properties";
+import {cast} from "@jangaroo/runtime";
+import StudioAppsImpl from "@coremedia/studio-client.app-context-models/apps/StudioAppsImpl";
 
 interface QueryStudioPluginConfig extends Config<QueryStudioPluginBase> {
 }
@@ -33,9 +35,8 @@ class QueryStudioPlugin extends QueryStudioPluginBase {
       tab: Config(QueryToolTab),
     });
     const button = new Button(buttonCfg);
-
-    studioApps._.getShortcutRunnerRegistry().registerShortcutRunner({ cmKey: "queryTool" }, (): void => {
-      typeof button.handler !== "string" && button.handler(button, null);
+    cast(StudioAppsImpl, studioApps._).getSubAppLauncherRegistry().registerSubAppLauncher("queryTool", (): void => {
+       typeof button.handler !== "string" && button.handler(button, null);
     });
   }
 

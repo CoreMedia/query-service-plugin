@@ -399,7 +399,7 @@ class QueryToolTabBase extends Panel {
     const sorters: SorterCollection = this.#store.getSorters();
     if (sorters && sorters.getCount() > 0) paramObject["sort"] = QueryToolTabBase.getSortDataJSON(sorters);
 
-    const url = RemoteService.calculateRequestURI("plugins/queryservice/qsrest/queryToCSV?" + ObjectUtil.toQueryString(paramObject));
+    const url = RemoteService.calculateRequestURI("qsrest/queryToCSV?" + ObjectUtil.toQueryString(paramObject));
     window.open(url, "QueryCSVDownload");
   }
 
@@ -431,7 +431,7 @@ class QueryToolTabBase extends Panel {
   undeleteContent(): void {
     const toBeUndeleted: Array<any> = this.getUndeleteValueExpression().getValue();
     if (Ext.isArray(toBeUndeleted)) {
-      const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("plugins/queryservice/qsrest/undelete", "GET");
+      const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("qsrest/undelete", "GET");
       const params: Record<string, any> = { contentIds: QueryToolTabBase.#getContentIds(toBeUndeleted) };
       remoteServiceMethod.request(
         params,

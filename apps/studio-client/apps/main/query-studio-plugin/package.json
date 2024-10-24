@@ -25,7 +25,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@jangaroo/run": "^3.0.1",
+    "@jangaroo/run": "^2.0.3",
     "@jangaroo/build": "^2.0.3",
     "@jangaroo/core": "^2.0.3",
     "@jangaroo/eslint-config": "^2.0.3",
