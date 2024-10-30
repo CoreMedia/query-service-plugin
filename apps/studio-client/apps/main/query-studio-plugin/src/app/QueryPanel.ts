@@ -47,7 +47,7 @@ class QueryPanel extends QueryPanelBase {
     super(((): any => ConfigUtils.apply(Config(QueryPanel, {
 
       itemId: QueryPanelBase.QUERY_PANEL_ID,
-      width: 500,
+      width: 550,
 
       layout: Config(VBoxLayout, { align: "stretch" }),
 

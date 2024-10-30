@@ -14,12 +14,9 @@ import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import QueryTool_properties from "../properties/QueryTool_properties";
 import QueryResultGridPanelBase from "./QueryResultGridPanelBase";
 import QueryToolTabBase from "./QueryToolTabBase";
-import ListViewStatusColumn
-  from "@coremedia/studio-client.main.editor-components/sdk/collectionview/list/ListViewStatusColumn";
-import ListViewNameColumn
-  from "@coremedia/studio-client.main.editor-components/sdk/collectionview/list/ListViewNameColumn";
-import ListViewTypeIconColumn
-  from "@coremedia/studio-client.main.editor-components/sdk/collectionview/list/ListViewTypeIconColumn";
+import QueryResultTypeIconColumn from '../columns/QueryResultTypeIconColumn'
+import NameColumn from "@coremedia/studio-client.ext.cap-base-components/columns/NameColumn";
+import QueryResultStatusColumn from "../columns/QueryResultStatusColumn";
 
 interface QueryResultGridPanelConfig extends Config<QueryResultGridPanelBase>, Partial<Pick<QueryResultGridPanel,
   "maxCountValueExpression" |
@@ -109,11 +106,8 @@ class QueryResultGridPanel extends QueryResultGridPanelBase {
 
       // grid columns: status, contentType, contentId, document name, document path
       columns: [
-        Config(ListViewStatusColumn, {
-          width: 46,
-          sortable: true,
-        }),
-        Config(ListViewTypeIconColumn, {
+        Config(QueryResultTypeIconColumn, {
+          width: 80,
           showTypeName: true,
           sortable: true,
           ...{ sortField: "type" },
@@ -125,7 +119,14 @@ class QueryResultGridPanel extends QueryResultGridPanelBase {
           width: 50,
           header: QueryTool_properties.column_id_title,
         }),
-        Config(ListViewNameColumn, { sortable: true }),
+        Config(NameColumn, {
+          sortable: true,
+          width: 100,
+        }),
+        Config(QueryResultStatusColumn, {
+          width: 60,
+          sortable: true,
+        }),
         Config(Column, {
           stateId: QueryToolTabBase.COLUMN_NAME_PATH,
           sortable: true,
