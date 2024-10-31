@@ -4,14 +4,14 @@
     "studio-server": {
       "maven": {
         "groupId": "com.coremedia.labs.plugins",
-        "artifactId": "studio-server.site-manager-query-service",
+        "artifactId": "query-service-lib",
         "version": "${project.version}"
       }
     },
     "studio-client": {
       "maven": {
         "groupId": "com.coremedia.labs.plugins",
-        "artifactId": "studio-client.site-manager-query-service",
+        "artifactId": "studio-client.query-studio-plugin",
         "version": "${project.version}"
       }
     }

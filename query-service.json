@@ -1,0 +1,11 @@
+{
+  "$schema": "https://releases.coremedia.com/plugins/plugin-schema-2.0.0.json",
+  "plugins": {
+    "studio-server": {
+      "file": "studio-server/target/query-service-lib-${VERSION}.zip"
+    },
+    "studio-client.main": {
+      "file": "studio-client/apps/main/query-studio-plugin/build/studio-client.main.query-studio-plugin-${VERSION}.zip"
+    }
+  }
+}
