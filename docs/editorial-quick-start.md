@@ -27,3 +27,7 @@ The entry point for the query builder is the menu at the top. From the menu bar,
 ## Query Builder Condition
 A query condition lets you define a requirement for a specific property of the content type. You can add multiple query conditions as needed.
 ![Image1: Query Builder Condition](images/editorial/qs-editorial-documentation_3.png)
+
+## Query Results
+Once you've created a query as show above, you can click the search button with the binoculars icon.
+![Image1: Query Builder Condition](images/editorial/qs-editorial-documentation_4.png)
