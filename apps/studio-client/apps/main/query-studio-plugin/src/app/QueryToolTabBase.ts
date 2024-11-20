@@ -431,7 +431,7 @@ class QueryToolTabBase extends Panel {
   undeleteContent(): void {
     const toBeUndeleted: Array<any> = this.getUndeleteValueExpression().getValue();
     if (Ext.isArray(toBeUndeleted)) {
-      const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("qsrest/undelete", "GET");
+      const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("/plugins/queryservice/qsrest/undelete", "GET");
       const params: Record<string, any> = { contentIds: QueryToolTabBase.#getContentIds(toBeUndeleted) };
       remoteServiceMethod.request(
         params,
