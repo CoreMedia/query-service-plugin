@@ -1,17 +1,17 @@
-import studioApps from "@coremedia/studio-client.app-context-models/apps/studioApps";
+import {studioAppsContext} from "@coremedia/studio-client.app-context-models";
+import {StudioAppsContextImpl} from "@coremedia/studio-client.app-context-models/apps/StudioAppsContextImpl";
 import IEditorContext from "@coremedia/studio-client.main.editor-components/sdk/IEditorContext";
 import OpenTabAction from "@coremedia/studio-client.main.editor-components/sdk/actions/OpenTabAction";
 import ComponentBasedWorkAreaTabType from "@coremedia/studio-client.main.editor-components/sdk/desktop/ComponentBasedWorkAreaTabType";
 import WorkArea from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkArea";
 import WorkAreaTabTypesPlugin from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkAreaTabTypesPlugin";
 import Button from "@jangaroo/ext-ts/button/Button";
+import {cast} from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import QueryStudioPluginBase from "./QueryStudioPluginBase";
 import QueryToolTab from "./app/QueryToolTab";
 import QueryTool_properties from "./properties/QueryTool_properties";
-import {cast} from "@jangaroo/runtime";
-import StudioAppsImpl from "@coremedia/studio-client.app-context-models/apps/StudioAppsImpl";
 
 interface QueryStudioPluginConfig extends Config<QueryStudioPluginBase> {
 }
@@ -35,8 +35,9 @@ class QueryStudioPlugin extends QueryStudioPluginBase {
       tab: Config(QueryToolTab),
     });
     const button = new Button(buttonCfg);
-    cast(StudioAppsImpl, studioApps._).getSubAppLauncherRegistry().registerSubAppLauncher("queryTool", (): void => {
-       typeof button.handler !== "string" && button.handler(button, null);
+
+    cast(StudioAppsContextImpl, studioAppsContext._).getShortcutRunnerRegistry().registerShortcutRunner("queryTool", (): void => {
+      typeof button.handler !== "string" && button.handler(button, null);
     });
   }
 
