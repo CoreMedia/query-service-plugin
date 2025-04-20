@@ -1,4 +1,4 @@
-import {studioAppsContext} from "@coremedia/studio-client.app-context-models";
+import {studioApps, studioAppsContext} from "@coremedia/studio-client.app-context-models";
 import {StudioAppsContextImpl} from "@coremedia/studio-client.app-context-models/apps/StudioAppsContextImpl";
 import IEditorContext from "@coremedia/studio-client.main.editor-components/sdk/IEditorContext";
 import OpenTabAction from "@coremedia/studio-client.main.editor-components/sdk/actions/OpenTabAction";
@@ -35,8 +35,7 @@ class QueryStudioPlugin extends QueryStudioPluginBase {
       tab: Config(QueryToolTab),
     });
     const button = new Button(buttonCfg);
-
-    cast(StudioAppsContextImpl, studioAppsContext._).getShortcutRunnerRegistry().registerShortcutRunner("queryTool", (): void => {
+    studioAppsContext._.getShortcutRunnerRegistry().registerShortcutRunner({ cmKey: "queryTool" }, (): void => {
       typeof button.handler !== "string" && button.handler(button, null);
     });
   }
