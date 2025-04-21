@@ -1,12 +1,10 @@
-import {studioApps, studioAppsContext} from "@coremedia/studio-client.app-context-models";
-import {StudioAppsContextImpl} from "@coremedia/studio-client.app-context-models/apps/StudioAppsContextImpl";
+import {studioAppsContext} from "@coremedia/studio-client.app-context-models";
 import IEditorContext from "@coremedia/studio-client.main.editor-components/sdk/IEditorContext";
 import OpenTabAction from "@coremedia/studio-client.main.editor-components/sdk/actions/OpenTabAction";
 import ComponentBasedWorkAreaTabType from "@coremedia/studio-client.main.editor-components/sdk/desktop/ComponentBasedWorkAreaTabType";
 import WorkArea from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkArea";
 import WorkAreaTabTypesPlugin from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkAreaTabTypesPlugin";
 import Button from "@jangaroo/ext-ts/button/Button";
-import {cast} from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import QueryStudioPluginBase from "./QueryStudioPluginBase";

@@ -7,13 +7,13 @@ module.exports = jangarooConfig({
     namespace: "com.coremedia.labs.query.studio",
     css: [
       {
-        path: "resources/css/query.css"
+        path: "resources/css/query.css",
       },
     ],
     studioPlugins: [
       {
         mainClass: "com.coremedia.labs.query.studio.QueryStudioPlugin",
-        name: "Query Studio Plugin"
+        name: "Query Studio Plugin",
       },
     ],
   },
@@ -28,19 +28,9 @@ module.exports = jangarooConfig({
           cmOrder: 90,
           cmCategory: "Content",
           name: "Query Tool",
-          url: "",
           cmAdministrative: true,
-          cmService: {
-            name: "launchSubAppService",
-            method: "launchSubApp",
-          },
         },
       ],
-    },
-  },
-  command: {
-    build: {
-      ignoreTypeErrors: true
     },
   },
 });
