@@ -29,6 +29,7 @@ import QueryTool_properties from "../properties/QueryTool_properties";
 import QueryCondition from "./QueryCondition";
 import QueryPanel from "./QueryPanel";
 import QueryPanelBase from "./QueryPanelBase";
+import PropertyFieldGroup from "@coremedia/studio-client.main.editor-components/sdk/premular/PropertyFieldGroup";
 
 interface QueryConditionBaseConfig extends Config<Panel> {
 }
@@ -105,7 +106,7 @@ class QueryConditionBase extends Panel {
     const cVE: ValueExpression = this.getComparatorVEx();
     cVE.addChangeListener(bind(this, this.onComparatorChange));
 
-    this.ui = PanelSkin.FRAME_100.getSkin();
+    this.ui = PanelSkin.CARD_200.getSkin();
     // each component gets an individual itemId, depending on the time of its creation
     this.itemId = "qc_" + (new Date()).getTime();
     this.setTitle(QueryTool_properties.conditionTitle);
@@ -284,7 +285,7 @@ class QueryConditionBase extends Panel {
           margin: "0 0 0 0",
           padding: "8px 0 0 0",
           store: this.getComparatorStore(comparatorOptions),
-          ui: TextfieldSkin.WINDOW_HEADER.getSkin(),
+          ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
           plugins: [
             Ext.create(BindPropertyPlugin, {
               componentEvent: "change",
