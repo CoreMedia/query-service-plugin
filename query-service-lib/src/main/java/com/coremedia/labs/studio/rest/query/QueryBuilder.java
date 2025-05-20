@@ -187,9 +187,10 @@ public class QueryBuilder {
           }
         }
       }
+      if (!query.toString().trim().isEmpty()){
+        queryBase.append(SPACE).append(':').append(SPACE).append(query);
+      }
     }
-
-    queryBase.append(!(query == null || "".equals(query)) ? " : "+ query.toString() : "");
 
     /* SORTING */
     int sSize = sorters.size();
