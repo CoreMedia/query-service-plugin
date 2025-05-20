@@ -328,7 +328,6 @@ class QueryToolTabBase extends Panel {
    * Triggered also when the value of 'sendQueryValueExpression' is set back to 'false'.
    */
   protected onSendQuery(): void {
-    this.#store.removeAll();
     if (this.#sendQueryValueExpression.getValue()) {
       if (this.#pageValueExpression.getValue() === QueryToolTabBase.DEFAULT_VALUE_PAGE) {
         this.reload();
