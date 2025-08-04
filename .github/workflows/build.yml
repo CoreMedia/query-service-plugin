@@ -44,7 +44,7 @@ jobs:
           npm install -g pnpm@8.6
 
       - name: Setup Git
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         run: |
           git config --global user.name 'coremedia-ci'
           git config --global user.email 'coremedia-ci@coremedia.com'
@@ -58,7 +58,7 @@ jobs:
 
       - name: Set Release Version
         id: set-release-version
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         env:
           PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
           PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
@@ -125,7 +125,7 @@ jobs:
 
       - name: Set Next Snapshot Version
         id: set-snapshot-version
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         env:
           PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
           PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
@@ -150,7 +150,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Release Artifacts
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.set-release-version.outputs.version }}
