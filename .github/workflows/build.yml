@@ -50,7 +50,7 @@ jobs:
           git config --global user.email 'coremedia-ci@coremedia.com'
 
       - name: Install PNPM Dependencies
-        working-directory: studio-client
+        working-directory: apps/studio-client
         env:
           NPM_CONFIG_@coremedia:registry: 'https://npm.coremedia.io'
           NPM_CONFIG_@jangaroo:registry: 'https://npm.coremedia.io'
@@ -66,7 +66,7 @@ jobs:
           mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DremoveSnapshot -DartifactId='*'
           release_version=$(mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
 
-          cd studio-client
+          cd apps/studio-client
           pnpm set-version ${release_version}
           cd ..
 
@@ -87,7 +87,7 @@ jobs:
           echo "::set-output name=version::${version}"
 
       - name: Build with Pnpm
-        working-directory: studio-client
+        working-directory: apps/studio-client
         run: |
           pnpm -r build
           pnpm -r package
@@ -133,7 +133,7 @@ jobs:
           mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DnextSnapshot -DartifactId='*'
           snapshot_version=$(mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
 
-          cd studio-client
+          cd apps/studio-client
           pnpm set-version ${snapshot_version}
           cd ..
 
