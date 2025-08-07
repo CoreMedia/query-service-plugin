@@ -49,11 +49,16 @@ jobs:
           git config --global user.name 'coremedia-ci'
           git config --global user.email 'coremedia-ci@coremedia.com'
 
+      - name: Setup registry npm.coremedia.io
+        run: |
+          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data '{"name": "${{ secrets.CM_NPM_USER }}", "password": "${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}"}' https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
+          echo "::add-mask::$NPM_AUTH_TOKEN"
+          pnpm config set //npm.coremedia.io/:_authToken=$NPM_AUTH_TOKEN
+          pnpm config set @coremedia:registry=https://npm.coremedia.io
+          pnpm config set @jangaroo:registry=https://npm.coremedia.io
+
       - name: Install PNPM Dependencies
         working-directory: apps/studio-client
-        env:
-          NPM_CONFIG_@coremedia:registry: 'https://npm.coremedia.io'
-          NPM_CONFIG_@jangaroo:registry: 'https://npm.coremedia.io'
         run: pnpm install
 
       - name: Set Release Version
@@ -155,3 +160,20 @@ jobs:
         with:
           tag_name: v${{ steps.set-release-version.outputs.version }}
           files: target/bundle/*
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        id: assume-role
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CI_GITHUB_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY_CI_GITHUB_ACTIONS }}
+          aws-region: eu-west-1
+          role-to-assume: ${{ secrets.AWS_S3_PLUGINS_ROLE_ARN_TO_ASSUME }}
+          role-external-id: ${{ secrets.AWS_S3_PLUGINS_EXTERNAL_ID }}
+          role-duration-seconds: 900
+          role-skip-session-tagging: true
+
+      - name: Push Snapshot to S3
+        id: push-snapshot-to-s3
+        if: github.ref != 'refs/heads/main'
+        run: aws s3 cp --recursive --sse AES256 target/bundle/ s3://io.coremedia.plugins.eu-west-1/coremedia-snapshots/query-service-plugin/${{ steps.output-version.outputs.version }}/
