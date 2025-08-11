@@ -92,7 +92,7 @@ jobs:
           echo "::set-output name=version::${version}"
 
       - name: Build with Pnpm
-        working-directory: studio-client
+        working-directory: apps/studio-client
         run: |
           pnpm -r build
           pnpm -r package
