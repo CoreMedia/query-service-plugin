@@ -46,8 +46,7 @@
         <extensions>true</extensions>
         <configuration>
           <pluginId>query-service-lib</pluginId>
-          <!--<pluginVersion>${project.version}</pluginVersion>-->
-          <pluginVersion>1.0.6</pluginVersion>
+          <pluginVersion>${project.version}</pluginVersion>
           <pluginConfigurationClass>com.coremedia.labs.studio.rest.QueryRestConfiguration</pluginConfigurationClass>
           <pluginProvider>CoreMedia</pluginProvider>
         </configuration>
