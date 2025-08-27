@@ -51,7 +51,7 @@ jobs:
 
       - name: Setup registry npm.coremedia.io
         run: |
-          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data "{\"name\": \"${{ secrets.CM_NPM_USER }}\", \"password\": \"${{ secrets.CM_NPM_PASSWORD }}\"}" https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
+          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data "{\"name\": \"${{ secrets.CM_NPM_USER }}\", \"password\": \"${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}\"}" https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
           echo "::add-mask::$NPM_AUTH_TOKEN"
           pnpm config set //npm.coremedia.io/:_authToken=$NPM_AUTH_TOKEN
           pnpm config set @coremedia:registry=https://npm.coremedia.io
