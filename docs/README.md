@@ -1,4 +1,6 @@
 # Query Service
+V1: CMCC-2401
+V2: CMCC-2406
 
 ## Table of Contents
 
