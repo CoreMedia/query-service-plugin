@@ -22,19 +22,23 @@ import QuerySaveDialog from "../dialog/QuerySaveDialog";
 import AddTooltipPlugin from "../plugins/AddTooltipPlugin";
 import QueryTool_properties from "../properties/QueryTool_properties";
 import QueryPanelBase from "./QueryPanelBase";
+import Premular from "@coremedia/studio-client.main.editor-components/sdk/premular/Premular";
+import PremularBase from "@coremedia/studio-client.main.editor-components/sdk/premular/PremularBase";
+import TabBarSkin from "@coremedia/studio-client.ext.ui-components/skins/TabBarSkin";
+import Spacer from "@jangaroo/ext-ts/toolbar/Spacer";
 
 interface QueryPanelConfig extends Config<QueryPanelBase>, Partial<Pick<QueryPanel,
-  "contentTypeValueExpression" |
-  "includeSubTypesValueExpression" |
-  "includeSubTypesDisabledValueExpression" |
-  "loadCountValueExpression" |
-  "maxCountValueExpression" |
-  "pageValueExpression" |
-  "sendQueryValueExpression" |
-  "storeValueExpression" |
-  "totalCountValueExpression" |
-  "userValueExpression" |
-  "queryDataValueExpression"
+    "contentTypeValueExpression" |
+    "includeSubTypesValueExpression" |
+    "includeSubTypesDisabledValueExpression" |
+    "loadCountValueExpression" |
+    "maxCountValueExpression" |
+    "pageValueExpression" |
+    "sendQueryValueExpression" |
+    "storeValueExpression" |
+    "totalCountValueExpression" |
+    "userValueExpression" |
+    "queryDataValueExpression"
 >> {
 }
 
@@ -47,27 +51,29 @@ class QueryPanel extends QueryPanelBase {
     super(((): any => ConfigUtils.apply(Config(QueryPanel, {
 
       itemId: QueryPanelBase.QUERY_PANEL_ID,
-      width: 550,
-
+      width: 627,
+      minWidth: PremularBase.DEFAULT_DOCUMENT_CONTAINER_MIN_WIDTH,
       layout: Config(VBoxLayout, { align: "stretch" }),
 
       // top toolbar: contentTypeSelector, loadCountSelector, adding of query conditions, sending query
       tbar: Config(Toolbar, {
-        ui: ToolbarSkin.WINDOW_HEADER.getSkin(),
+        ui: TabBarSkin.WORKAREA_PANEL.getSkin(),
         dock: "top",
         cls: "query-toolbar",
-        height: 40,
+        height:  Premular.TOOLBAR_HEIGHT,
         items: [
+          Config(Spacer, { width: "6px" }),
           // ContentTypeSelector
           Config(ContentTypeSelector, {
             itemId: "ctBox",
+            margin: "0 13 0 0",
             flex: 0.3,
             minWidth: 100,
             emptyText: Editor_properties.SearchArea_content_type_selector_empty_text,
             ariaLabel: Editor_properties.SearchArea_contenttypeselector_tooltip,
             entries: this.getContentTypeData(),
             contentTypeValueExpression: config.contentTypeValueExpression,
-            ui: TextfieldSkin.WINDOW_HEADER.getSkin(),
+            ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
           }),
           Config(Checkbox, {
             itemId: "check-subtypes",
@@ -118,7 +124,7 @@ class QueryPanel extends QueryPanelBase {
               [20, "20"],
               [-1, "all"],
             ],
-            ui: TextfieldSkin.WINDOW_HEADER.getSkin(),
+            ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
             ...ConfigUtils.append({
               plugins: [
                 Config(BindPropertyPlugin, {
@@ -147,6 +153,7 @@ class QueryPanel extends QueryPanelBase {
             handler: bind(this, this.sendQuery),
             tooltip: QueryTool_properties.button_send,
           }),
+          Config(Spacer, { width: "6px" }),
         ],
       }),
 
@@ -155,7 +162,7 @@ class QueryPanel extends QueryPanelBase {
         ui: ToolbarSkin.WINDOW_HEADER.getSkin(),
         cls: "query-paging-toolbar",
         dock: "bottom",
-        height: 40,
+        height: 80,
         items: [
           // export csv
           Config(IconButton, {
@@ -225,11 +232,15 @@ class QueryPanel extends QueryPanelBase {
           itemId: "conditionContainerOuter",
           ui: ContainerSkin.LIGHT.getSkin(),
           flex: 1,
+          cls: "cm-app-loading-screen",
+          baseCls: "cm-app-loading-screen",
           overflowY: "scroll",
           items: [
             Config(Container, {
               itemId: QueryPanelBase.CONDITION_CONTAINER_ID,
               id: QueryPanelBase.CONDITION_CONTAINER_ID,
+              cls: "cm-app-loading-screen",
+              baseCls: "cm-app-loading-screen",
               items: [
               ],
             }),

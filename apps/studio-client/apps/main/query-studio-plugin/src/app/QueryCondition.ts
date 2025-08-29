@@ -43,7 +43,7 @@ class QueryCondition extends QueryConditionBase {
           valueField: "name",
           displayField: "label",
           tpl: QueryConditionBase.getComboBoxTemplate(),
-          ui: TextfieldSkin.WINDOW_HEADER.getSkin(),
+          ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
           ...ConfigUtils.append({
             plugins: [
               Config(BindPropertyPlugin, {
