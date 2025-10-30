@@ -1070,7 +1070,7 @@ class QueryPanelBase extends Panel {
    * Recursive calculation, beginning with the base group. This group is loaded.
    */
   #loadUsers(): void {
-    const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("/api/plugins/query-service-lib/qsrest/users", "GET");
+    const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("/rest/api/plugins/query-service-lib/qsrest/users", "GET");
     const params: any = {};
     remoteServiceMethod.request(
       params,

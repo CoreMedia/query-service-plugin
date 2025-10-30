@@ -33,7 +33,7 @@ class QueryResultGridPanelBase extends GridPanel {
 
   static readonly QUERY_GRID_ID: string = "queryGrid";
 
-  static readonly QUERY_REST_SERVICE_URL: string = "/api/plugins/query-service-lib/qsrest/query";
+  static readonly QUERY_REST_SERVICE_URL: string = "/rest/api/plugins/query-service-lib/qsrest/query";
 
   #maxCountValueExpression: ValueExpression = null;
 
