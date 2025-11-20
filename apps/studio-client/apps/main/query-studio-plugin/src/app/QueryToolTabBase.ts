@@ -399,7 +399,7 @@ class QueryToolTabBase extends Panel {
     const sorters: SorterCollection = this.#store.getSorters();
     if (sorters && sorters.getCount() > 0) paramObject["sort"] = QueryToolTabBase.getSortDataJSON(sorters);
 
-    const url = RemoteService.calculateRequestURI("qsrest/queryToCSV?" + ObjectUtil.toQueryString(paramObject));
+    const url = RemoteService.calculateRequestURI("/rest/api/plugins/query-service-lib/qsrest/queryToCSV?" + ObjectUtil.toQueryString(paramObject));
     window.open(url, "QueryCSVDownload");
   }
 
