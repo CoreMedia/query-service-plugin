@@ -16,42 +16,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up JDK 17
+      - name: Setup Git
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.name 'coremedia-ci'
+          git config --global user.email 'coremedia-ci@coremedia.com'
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'adopt'
           server-id: coremedia.external.releases
           server-username: PLUGINS_NEXUS_USER
           server-password: PLUGINS_NEXUS_PASSWORD
+          cache: 'maven'
       - name: Cache Maven Repo
         uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
-          version: 9.3
-
-      - name: Setup Git
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-        run: |
-          git config --global user.name 'coremedia-ci'
-          git config --global user.email 'coremedia-ci@coremedia.com'
-
+          version: 10
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: "studio-client/pnpm-lock.yaml"
       - name: Setup registry npm.coremedia.io
         run: |
-          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data "{\"name\": \"${{ secrets.CM_NPM_USER }}\", \"password\": \"${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}\"}" https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
+          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data '{"name": "${{ secrets.CM_NPM_USER }}", "password": "${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}"}' https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
           echo "::add-mask::$NPM_AUTH_TOKEN"
-          echo "Token: $NPM_AUTH_TOKEN"
           pnpm config set //npm.coremedia.io/:_authToken=$NPM_AUTH_TOKEN
           pnpm config set @coremedia:registry=https://npm.coremedia.io
           pnpm config set @jangaroo:registry=https://npm.coremedia.io
@@ -61,6 +59,27 @@ jobs:
         working-directory: apps/studio-client
         run: pnpm install
 
+      - name: Set Release Version
+        id: set-release-version
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
+          PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+        run: |
+          mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DremoveSnapshot -DartifactId='*'
+          release_version=$(mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+
+          cd studio-client
+          pnpm set-version ${release_version}
+          cd ..
+
+          git add .
+          git commit -m "set release version: ${release_version}"
+          release_tag="v${release_version}"
+          git tag "${release_tag}"
+          echo "version=${release_version}" >> $GITHUB_OUTPUT
+          echo "tag=${release_tag}" >> $GITHUB_OUTPUT
+
       - name: Output Version
         id: output-version
         env:
@@ -68,7 +87,7 @@ jobs:
           PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
         run: |
           version=$(mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "::set-output name=version::${version}"
+          echo "version=${version}" >> $GITHUB_OUTPUT
 
       - name: Build with Pnpm
         working-directory: apps/studio-client
@@ -80,12 +99,15 @@ jobs:
         env:
           PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
           PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots install
 
       - name: Create Bundle
         env:
           VERSION: ${{ steps.output-version.outputs.version }}
           DESCRIPTOR_TEMPLATE: 'query-service.json'
+          CREATE_RELEASE: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+          RELEASE_TAG: ${{ steps.set-release-version.outputs.tag }}
+          URL_PATTERN: 'https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/${REL_FILE}'
         run: |
           mkdir -p target/bundle
           RESULT="$(cat ${DESCRIPTOR_TEMPLATE})"
@@ -95,10 +117,33 @@ jobs:
             FILE=$(eval echo ${FILE_TEMPLATE})
             REL_FILE=$(echo "${FILE}" | sed 's#.*/##g')
             cp "${FILE}" target/bundle
+            if [ "${CREATE_RELEASE}" = true ]; then
+              URL=$(eval echo ${URL_PATTERN})
+              RESULT="$(echo ${RESULT} | jq -r --arg APP "${APP}" --arg URL "${URL}" '.plugins[$APP] = {"url": $URL}')"
+            else
             RESULT="$(echo ${RESULT} | jq -r --arg APP "${APP}" --arg REL_FILE "${REL_FILE}" '.plugins[$APP] = {"file": $REL_FILE}')"
+            fi
           done
           echo "${RESULT}" > "target/bundle/$(echo ${DESCRIPTOR_TEMPLATE} | sed 's#.*/##g' | cut -d '.' -f1)-${VERSION}.json"
 
+      - name: Set Next Snapshot Version
+        id: set-snapshot-version
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
+          PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+        run: |
+          mvn --batch-mode org.codehaus.mojo:versions-maven-plugin:2.8.1:set -DnextSnapshot -DartifactId='*'
+          snapshot_version=$(mvn --batch-mode org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+
+          cd studio-client
+          pnpm set-version ${snapshot_version}
+          cd ..
+
+          git add .
+          git commit -m "set next snapshot version"
+          git push && git push --tags
+          echo "version=${snapshot_version}" >> $GITHUB_OUTPUT
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -107,19 +152,26 @@ jobs:
           path: target/bundle
           if-no-files-found: error
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        id: assume-role
+      - name: Upload Release Artifacts
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CI_GITHUB_ACTIONS }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY_CI_GITHUB_ACTIONS }}
-          aws-region: eu-west-1
-          role-to-assume: ${{ secrets.AWS_S3_PLUGINS_ROLE_ARN_TO_ASSUME }}
-          role-external-id: ${{ secrets.AWS_S3_PLUGINS_EXTERNAL_ID }}
-          role-duration-seconds: 900
-          role-skip-session-tagging: true
+          tag_name: v${{ steps.set-release-version.outputs.version }}
+          files: target/bundle/*
 
-      - name: Push Snapshot to S3
-        id: push-snapshot-to-s3
-        if: github.ref != 'refs/heads/main'
-        run: aws s3 cp --recursive --sse AES256 target/bundle/ s3://io.coremedia.plugins.eu-west-1/coremedia-snapshots/query-service-plugin/${{ steps.output-version.outputs.version }}/
+#      - name: Configure AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        id: assume-role
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CI_GITHUB_ACTIONS }}
+#          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY_CI_GITHUB_ACTIONS }}
+#          aws-region: eu-west-1
+#          role-to-assume: ${{ secrets.AWS_S3_PLUGINS_ROLE_ARN_TO_ASSUME }}
+#          role-external-id: ${{ secrets.AWS_S3_PLUGINS_EXTERNAL_ID }}
+#          role-duration-seconds: 900
+#          role-skip-session-tagging: true
+
+#      - name: Push Snapshot to S3
+#        id: push-snapshot-to-s3
+#        if: github.ref != 'refs/heads/main'
+#        run: aws s3 cp --recursive --sse AES256 target/bundle/ s3://io.coremedia.plugins.eu-west-1/coremedia-snapshots/query-service-plugin/${{ steps.output-version.outputs.version }}/
