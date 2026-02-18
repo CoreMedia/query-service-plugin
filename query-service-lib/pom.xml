@@ -7,16 +7,15 @@
 
   <groupId>com.coremedia.labs.plugins</groupId>
   <artifactId>query-service-lib</artifactId>
-  <version>2.0.5-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <packaging>coremedia-plugin</packaging>
 
 
   <description>Query REST Extension for Studio</description>
   <properties>
+    <maven.compiler.release>21</maven.compiler.release>
     <coremedia.project.extension.for>studio-lib</coremedia.project.extension.for>
-    <maven.compiler.release>17</maven.compiler.release>
-    <cm.studio-server.core.version>2406.1.1</cm.studio-server.core.version>
-    <cm.common.core.version>2406.1.1</cm.common.core.version>
+    <cm.version>2512.0.0</cm.version>
   </properties>
 
   <repositories>
@@ -37,34 +36,150 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.coremedia.cms</groupId>
+        <artifactId>studio-server-core-bom</artifactId>
+        <version>${cm.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.coremedia.cms</groupId>
+        <artifactId>studio-server-thirdparty-for-plugins-bom</artifactId>
+        <version>${cm.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.coremedia.cms</groupId>
+        <artifactId>common-core-bom</artifactId>
+        <version>${cm.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.coremedia.cms</groupId>
+        <artifactId>common-thirdparty-bom</artifactId>
+        <version>${cm.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
+    <!-- COREMEDIA dependencies -->
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>common.beans-for-plugins-container</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>cap-client-base</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>cap-unified-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>common.plugin-base</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- THIRD-PARTY dependencies -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+
+    <!-- TEST scope -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>cap-client-xml</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
-        <groupId>com.coremedia.maven</groupId>
-        <artifactId>coremedia-plugins-maven-plugin</artifactId>
-        <version>1.2.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <pluginId>query-service-lib</pluginId>
-          <pluginVersion>${project.version}</pluginVersion>
-          <pluginConfigurationClass>com.coremedia.labs.studio.rest.QueryRestConfiguration</pluginConfigurationClass>
-          <pluginProvider>CoreMedia</pluginProvider>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.0.0-M2</version>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.6.0</version>
         <configuration>
           <ignoredDependencies>
             <!-- JUnit Jupiter: Use Aggregator rather than API/Engine Artifacts directly -->
@@ -95,145 +210,26 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>com.coremedia.maven</groupId>
+        <artifactId>coremedia-plugins-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <pluginId>query-service-lib</pluginId>
+          <pluginVersion>${project.version}</pluginVersion>
+          <pluginConfigurationClass>com.coremedia.labs.studio.rest.QueryRestConfiguration</pluginConfigurationClass>
+          <pluginProvider>CoreMedia</pluginProvider>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>3.0.0-M2</version>
+      </plugin>
     </plugins>
   </build>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.18.20</version>
-      </dependency>
-      <dependency>
-        <groupId>com.coremedia.cms</groupId>
-        <artifactId>common-thirdparty-bom</artifactId>
-        <version>${cm.studio-server.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.coremedia.cms</groupId>
-        <artifactId>studio-server-core-bom</artifactId>
-        <version>${cm.studio-server.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.coremedia.cms</groupId>
-        <artifactId>studio-server-thirdparty-for-plugins-bom</artifactId>
-        <version>${cm.studio-server.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.coremedia.cms</groupId>
-        <artifactId>common-core-bom</artifactId>
-        <version>${cm.common.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>cap-client-base</artifactId>
-      <scope>provided</scope>
-    </dependency>
-<!--    <dependency>
-      <groupId>com.coremedia.ui</groupId>
-      <artifactId>cap-rest-service</artifactId>
-      <scope>provided</scope>
-    </dependency>-->
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>cap-unified-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>cap-unified-api-boot</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>common.plugin-base</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <!--<dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>common.plugin-framework</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.pf4j</groupId>
-      <artifactId>pf4j</artifactId>
-      <scope>provided</scope>
-    </dependency>
--->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-
-    <!-- tests -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>cap-client-xml</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
 </project>
