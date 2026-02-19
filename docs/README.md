@@ -1,12 +1,22 @@
+![CoreMedia Content Cloud Version](https://img.shields.io/static/v1?message=12%7C13&label=CoreMedia%20Content%20Cloud&style=for-the-badge&labelColor=666666&color=672779 "This badge shows the CoreMedia version this project is compatible with.
+Please read the versioning section of the project to see what other CoreMedia versions are supported and how to find them.")
+
 # Query Service
-V1: CMCC-2401
-V2: CMCC-2406
+
+## Versioning
+
+| Plugin Version | Content Cloud Version | 
+|----------------|-----------------------|
+| 1.x            | CMCC 12 2401          | 
+| 2.x            | CMCC 12 2406          |
+| 3.x            | CMCC 13 2512          |
+
 
 ## Table of Contents
 
-1. [Thankyou Note](thanks-to-tsystems.md))
+1. [Thankyou Note](thanks-to-tsystems.md)
 
-Thank you to T-Systems.
+    Thank you to T-Systems.
 
 2. [Editorial Quick Start](editorial-quick-start.md)
 

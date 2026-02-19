@@ -1,37 +1,35 @@
 {
   "name": "@coremedia-blueprint/studio-client.main.query-studio-plugin",
-  "author": "Blueprint",
-  "version": "2.0.5-SNAPSHOT",
+  "version": "3.0.0-SNAPSHOT",
+  "author": "CoreMedia GmbH",
+  "license": "CoreMedia Open Source License",
   "private": true,
   "dependencies": {
-    "@coremedia/studio-client.app-context-models": "^2406.1.1",
-    "@coremedia/studio-client.base-models": "^2406.1.1",
-    "@coremedia/studio-client.cap-base-models": "^2406.1.1",
-    "@coremedia/studio-client.cap-rest-client": "^2406.1.1",
-    "@coremedia/studio-client.cap-rest-client-impl": "^2406.1.1",
-    "@coremedia/studio-client.client-core": "^2406.1.1",
-    "@coremedia/studio-client.client-core-impl": "^2406.1.1",
-    "@coremedia/studio-client.ext.cap-base-components": "^2406.1.1",
-    "@coremedia/studio-client.ext.errors-validation-components": "^2406.1.1",
-    "@coremedia/studio-client.ext.form-services-toolkit": "^2406.1.1",
-    "@coremedia/studio-client.ext.library-services-toolkit": "^2406.1.1",
-    "@coremedia/studio-client.ext.link-list-components": "^2406.1.1",
-    "@coremedia/studio-client.ext.ui-components": "^2406.1.1",
-    "@coremedia/studio-client.link-list-models": "^2406.1.1",
-    "@coremedia/studio-client.main.editor-components": "^2406.1.1",
-    "@coremedia/studio-client.multi-site-models": "^2406.1.1",
-    "@jangaroo/ext-ts": "^2.0.0",
-    "@jangaroo/runtime": "^3.2.0",
-    "rxjs": "^7.8.1"
+    "@coremedia/studio-client.app-context-models": "catalog:",
+    "@coremedia/studio-client.base-models": "catalog:",
+    "@coremedia/studio-client.cap-base-models": "catalog:",
+    "@coremedia/studio-client.cap-rest-client": "catalog:",
+    "@coremedia/studio-client.client-core": "catalog:",
+    "@coremedia/studio-client.ext.cap-base-components": "catalog:",
+    "@coremedia/studio-client.ext.errors-validation-components": "catalog:",
+    "@coremedia/studio-client.ext.form-services-toolkit": "catalog:",
+    "@coremedia/studio-client.ext.library-services-toolkit": "catalog:",
+    "@coremedia/studio-client.ext.link-list-components": "catalog:",
+    "@coremedia/studio-client.ext.ui-components": "catalog:",
+    "@coremedia/studio-client.link-list-models": "catalog:",
+    "@coremedia/studio-client.main.editor-components": "catalog:",
+    "@coremedia/studio-client.multi-site-models": "catalog:",
+    "@jangaroo/ext-ts": "catalog:",
+    "@jangaroo/runtime": "catalog:",
+    "rxjs": "catalog:"
   },
   "devDependencies": {
-    "@jangaroo/run": "^3.2.0",
-    "@jangaroo/build": "^3.2.0",
-    "@jangaroo/core": "^3.2.0",
-    "@jangaroo/eslint-config": "^2.0.3",
-    "@jangaroo/publish": "^3.2.0",
-    "eslint": "^8.56.0",
-    "rimraf": "^5.0.7"
+    "@coremedia/studio-client.ext.eslint-config": "catalog:",
+    "@jangaroo/build": "catalog:",
+    "@jangaroo/core": "catalog:",
+    "@jangaroo/run": "catalog:",
+    "eslint": "catalog:",
+    "rimraf": "catalog:"
   },
   "scripts": {
     "clean": "rimraf ./dist && rimraf ./build",
@@ -39,8 +37,7 @@
     "watch": "jangaroo watch",
     "start": "jangaroo run",
     "package": "jangaroo package",
-    "publish": "jangaroo publish",
-    "lint": "eslint --fix \"src/**/*.ts\""
+    "lint": "eslint"
   },
   "exports": {
     "./*": {

@@ -1,7 +1,7 @@
 package com.coremedia.labs.studio.rest;
 
-import com.coremedia.cap.content.ContentRepository;
-import com.coremedia.cap.undoc.common.spring.CapRepositoriesConfiguration;
+import com.coremedia.cap.common.CapConnection;
+import com.coremedia.cms.common.plugins.beans_for_plugins2.CommonBeansForPluginsConfiguration;
 import com.coremedia.labs.studio.rest.query.QueryResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Import;
 	proxyBeanMethods = false
 )
 @Import({
-        CapRepositoriesConfiguration.class
+        CommonBeansForPluginsConfiguration.class,
 })
 public class QueryRestConfiguration {
 
   @Bean
-  public QueryResource queryResource(ContentRepository contentRepository) {
-    return new QueryResource(contentRepository);
+  public QueryResource queryResource(CapConnection connection) {
+    return new QueryResource(connection.getContentRepository());
   }
 
 

@@ -12,14 +12,13 @@ import ContentType from "@coremedia/studio-client.cap-rest-client/content/Conten
 import IssuesDetectedError from "@coremedia/studio-client.cap-rest-client/content/IssuesDetectedError";
 import Struct from "@coremedia/studio-client.cap-rest-client/struct/Struct";
 import User from "@coremedia/studio-client.cap-rest-client/user/User";
-import StructSubBean from "@coremedia/studio-client.cap-rest-client-impl/common/impl/StructSubBean";
+import StructSubBean from "@coremedia/studio-client.cap-rest-client/common/impl/StructSubBean";
 import RemoteBean from "@coremedia/studio-client.client-core/data/RemoteBean";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import RemoteError from "@coremedia/studio-client.client-core/data/error/RemoteError";
-import RemoteServiceMethod from "@coremedia/studio-client.client-core-impl/data/impl/RemoteServiceMethod";
-import RemoteServiceMethodResponse from "@coremedia/studio-client.client-core-impl/data/impl/RemoteServiceMethodResponse";
-import ContentTypeSelectorBase from "@coremedia/studio-client.ext.cap-base-components/contenttypes/ContentTypeSelectorBase";
+import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
+import RemoteServiceMethodResponse from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethodResponse";
 import EditorErrors_properties from "@coremedia/studio-client.ext.errors-validation-components/error/EditorErrors_properties";
 import RemoteErrorHandlers from "@coremedia/studio-client.ext.errors-validation-components/error/RemoteErrorHandlers";
 import IconButton from "@coremedia/studio-client.ext.ui-components/components/IconButton";
@@ -41,6 +40,7 @@ import QueryTool_properties from "../properties/QueryTool_properties";
 import QueryCondition from "./QueryCondition";
 import QueryPanel from "./QueryPanel";
 import QueryToolTab from "./QueryToolTab";
+import { getAllContentTypeEntries } from "@coremedia/studio-client.cap-base-models/contenttypes/contentTypes";
 
 interface QueryPanelBaseConfig extends Config<Panel> {
 }
@@ -572,7 +572,7 @@ class QueryPanelBase extends Panel {
   }
 
   protected getContentTypeData(): Array<any> {
-    const data: Array<any> = ContentTypeSelectorBase.getAllContentTypeEntries();
+    const data: Array<any> = getAllContentTypeEntries();
     return QueryPanelBase.docTypes.concat(data);
   }
 

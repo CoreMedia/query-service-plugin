@@ -9,8 +9,8 @@ import ContentType from "@coremedia/studio-client.cap-rest-client/content/Conten
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import beanFactory from "@coremedia/studio-client.client-core/data/beanFactory";
-import RemoteService from "@coremedia/studio-client.client-core-impl/data/impl/RemoteService";
-import RemoteServiceMethod from "@coremedia/studio-client.client-core-impl/data/impl/RemoteServiceMethod";
+import RemoteService from "@coremedia/studio-client.client-core/data/impl/RemoteService";
+import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
 import Ext from "@jangaroo/ext-ts";
 import ObjectUtil from "@jangaroo/ext-ts/Object";
 import Store from "@jangaroo/ext-ts/data/Store";
