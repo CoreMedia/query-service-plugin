@@ -13,7 +13,8 @@
 3. [Download Release](#download-release)
 4. [Activate the Plugin](#activate-the-plugin)
 5. [Configure the Plugin](#configure-the-plugin)
-6. [Intellij IDEA Hints](#intellij-idea-hints)
+6. [Access Control](#access-control)
+7. [Intellij IDEA Hints](#intellij-idea-hints)
 
 ## Introduction
 
@@ -70,13 +71,27 @@ In short, for a quick development roundtrip:
    "/rest",
    ],
    },
+6. Now the plugin is running.  you can start using it via the studio sidebar menu
 
-6. Optionally restrict access (studio-server application.properties). Only members of these groups can use the Query Tool; the default is shown:
-   `query-service.allowed-groups=administratoren,developer,query-tool-user`
-   Create the group `query-tool-user` in the User Manager to grant access to additional users.
-   The Studio apps menu entry is limited to the same default groups via `cmGroups` in `apps/studio-client/apps/main/query-studio-plugin/jangaroo.config.js`; if you change the server property, adjust that list as well.
+## Access Control
 
-Now the plugin is running.  you can start using it via the studio sidebar menu
+> [!IMPORTANT]
+> Query Tool usage is restricted to allowed user groups.
+
+The list can be configured in the Studio server's `application.properties`.
+Members of any group in this comma-separated list can use the Query Tool.
+
+The default is:
+```properties
+query-service.allowed-groups=administratoren,developer,query-tool-user
+```
+
+While `administratoren`and `developer` are built-in groups, the custom group `query-tool-user` must be created in the User Manager to grant access to additional users.
+
+The Studio apps menu entry is limited to the same default groups via `cmGroups` in `apps/studio-client/apps/main/query-studio-plugin/jangaroo.config.js`. If you change the server property, adjust that list as well.
+
+To diagnose denied access, set `logging.level.com.coremedia.labs.studio.rest.query.QueryAccessPolicy=DEBUG` on the Studio server.
+
 
 ## Intellij IDEA Hints
 

@@ -1,9 +1,16 @@
 package com.coremedia.labs.studio.rest.query;
 
+import com.coremedia.cap.common.CapConnection;
 import com.coremedia.cap.user.Group;
 import com.coremedia.cap.user.User;
 import com.coremedia.cap.user.UserRepository;
+import com.coremedia.labs.studio.rest.QueryRestConfiguration;
 import org.junit.Test;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -33,13 +40,33 @@ public class QueryAccessPolicyTest {
   }
 
   private static QueryAccessPolicy policy(Set<String> userGroups, List<String> allowed) {
+    return new QueryAccessPolicy(repository(userGroups), allowed);
+  }
+
+  private static UserRepository repository(Set<String> userGroups) {
     User user = proxy(User.class, (m, a) -> m.equals("isMemberOf") && userGroups.stream().anyMatch(g -> GROUPS.get(g) == a[0]));
-    UserRepository repo = proxy(UserRepository.class, (m, a) -> switch (m) {
+    return proxy(UserRepository.class, (m, a) -> switch (m) {
       case "getUserByName" -> "alice".equals(a[0]) ? user : null;
       case "getGroupByName" -> GROUPS.get((String) a[0]);
       default -> null;
     });
-    return new QueryAccessPolicy(repo, allowed);
+  }
+
+  private static boolean isAllowedWithConfiguration(Set<String> userGroups, String... properties) {
+    try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+      TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, properties);
+      context.registerBean(PropertySourcesPlaceholderConfigurer.class);
+      context.registerBean(CapConnection.class, () -> proxy(CapConnection.class,
+        (m, a) -> m.equals("getUserRepository") ? repository(userGroups) : null));
+      // Exercise Spring's factory-method binding without importing the Studio server's other beans.
+      context.getBeanFactory().registerSingleton("queryRestConfiguration", new QueryRestConfiguration());
+      context.registerBeanDefinition("queryAccessPolicy", BeanDefinitionBuilder.genericBeanDefinition()
+        .setFactoryMethodOnBean("queryAccessPolicy", "queryRestConfiguration")
+        .setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR)
+        .getBeanDefinition());
+      context.refresh();
+      return context.getBean(QueryAccessPolicy.class).isAllowed(() -> "alice");
+    }
   }
 
   @Test
@@ -61,5 +88,24 @@ public class QueryAccessPolicyTest {
   public void configuredGroupsAreRespected() {
     assertFalse(policy(Set.of("developer"), List.of("query-tool-user")).isAllowed(() -> "alice"));
     assertTrue(policy(Set.of("other"), List.of(" other ")).isAllowed(() -> "alice"));
+  }
+
+  @Test
+  public void defaultPropertyGrantsEachDefaultGroupAccess() {
+    for (String group : QueryAccessPolicy.DEFAULT_ALLOWED_GROUPS) {
+      assertTrue(group, isAllowedWithConfiguration(Set.of(group)));
+    }
+  }
+
+  @Test
+  public void configuredPropertySplitsAndTrimsGroupNames() {
+    String property = "query-service.allowed-groups=unknown, , other";
+    assertTrue(isAllowedWithConfiguration(Set.of("other"), property));
+    assertFalse(isAllowedWithConfiguration(Set.of("developer"), property));
+  }
+
+  @Test
+  public void blankConfiguredPropertyDeniesAccess() {
+    assertFalse(isAllowedWithConfiguration(Set.of("developer", "query-tool-user"), "query-service.allowed-groups="));
   }
 }
