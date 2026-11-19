@@ -3,9 +3,13 @@ package com.coremedia.labs.studio.rest;
 import com.coremedia.cap.common.CapConnection;
 import com.coremedia.cms.common.plugins.beans_for_plugins2.CommonBeansForPluginsConfiguration;
 import com.coremedia.labs.studio.rest.query.QueryResource;
+import com.coremedia.labs.studio.rest.query.QueryAccessPolicy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import java.util.List;
 
 @Configuration(
 	proxyBeanMethods = false
@@ -16,8 +20,14 @@ import org.springframework.context.annotation.Import;
 public class QueryRestConfiguration {
 
   @Bean
-  public QueryResource queryResource(CapConnection connection) {
-    return new QueryResource(connection.getContentRepository());
+  public QueryAccessPolicy queryAccessPolicy(CapConnection connection,
+                                             @Value("${query-service.allowed-groups:administratoren,developer,query-tool-user}") List<String> allowedGroups) {
+    return new QueryAccessPolicy(connection.getUserRepository(), allowedGroups);
+  }
+
+  @Bean
+  public QueryResource queryResource(CapConnection connection, QueryAccessPolicy queryAccessPolicy) {
+    return new QueryResource(connection.getContentRepository(), queryAccessPolicy);
   }
 
 

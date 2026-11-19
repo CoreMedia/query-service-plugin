@@ -4,6 +4,8 @@ import OpenTabAction from "@coremedia/studio-client.main.editor-components/sdk/a
 import ComponentBasedWorkAreaTabType from "@coremedia/studio-client.main.editor-components/sdk/desktop/ComponentBasedWorkAreaTabType";
 import WorkArea from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkArea";
 import WorkAreaTabTypesPlugin from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkAreaTabTypesPlugin";
+import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
+import RemoteServiceMethodResponse from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethodResponse";
 import Button from "@jangaroo/ext-ts/button/Button";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
@@ -22,6 +24,22 @@ class QueryStudioPlugin extends QueryStudioPluginBase {
   override init(editorContext: IEditorContext): void {
     super.init(editorContext);
 
+    // Only activate the tool for users the server grants access to (configurable user groups).
+    const accessCheck = new RemoteServiceMethod("/rest/api/plugins/query-service-lib/qsrest/access", "GET");
+    accessCheck.request(
+      {},
+      (response: RemoteServiceMethodResponse): void => {
+        if (response?.getResponseJSON()?.allowed === true) {
+          this.#activate();
+        }
+      },
+      (): void => {
+        // no access or server error: keep the query tool disabled
+      },
+    );
+  }
+
+  #activate(): void {
     const buttonCfg = Config(Button);
     buttonCfg.id = "showQueryTool";
     buttonCfg.itemId = "btn-query-tool";

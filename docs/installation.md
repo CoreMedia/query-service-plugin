@@ -71,6 +71,11 @@ In short, for a quick development roundtrip:
    ],
    },
 
+6. Optionally restrict access (studio-server application.properties). Only members of these groups can use the Query Tool; the default is shown:
+   `query-service.allowed-groups=administratoren,developer,query-tool-user`
+   Create the group `query-tool-user` in the User Manager to grant access to additional users.
+   The Studio apps menu entry is limited to the same default groups via `cmGroups` in `apps/studio-client/apps/main/query-studio-plugin/jangaroo.config.js`; if you change the server property, adjust that list as well.
+
 Now the plugin is running.  you can start using it via the studio sidebar menu
 
 ## Intellij IDEA Hints
