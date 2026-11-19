@@ -11,6 +11,13 @@
   color: #ffffff;
 }
 
+.query-tool .query-tool-send-icon-button .x-btn-icon-el-primary-light-small {
+  color: #ffffff;
+  height: 24px;
+  width: 24px;
+  line-height: 24px;
+}
+
 .query-tool .query-paging-toolbar .query-control {
   width: auto !important;
   min-width: auto !important;
@@ -18,15 +25,18 @@
   float: left !important;
   position: relative !important;
 }
+
 .query-tool .query-paging-toolbar .x-toolbar-separator {
   margin: 0 8px 0 12px !important;
   left: auto !important;
   float: left !important;
   position: relative !important;
 }
+
 .query-tool .query-paging-toolbar .query-control .cm-core-icons {
   color: #3d4242;
 }
+
 .query-tool .query-paging-toolbar .query-label {
   margin: 0 8px 0 12px !important;
   color: #3d4242;
@@ -35,8 +45,131 @@
   position: relative !important;
 }
 
-.query-tool .query-condition .x-panel-body {
+.query-tool .query-condition {
   background-color: #efefef;
+  border-radius: 0;
+}
+
+.query-tool .query-condition:first-child {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.query-tool .query-condition:not(:has(+ .query-condition)) {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.query-tool .query-condition--property-name input {
+  font-weight: bold;
+  padding-left: 28px;
+}
+
+.query-tool .query-condition--property-name .x-form-item-body {
+  position: relative;
+}
+
+.query-tool .query-condition--property-name .query-condition-property-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #3d4242;
+  z-index: 1;
+}
+
+.query-tool .query-condition--property-value,
+.query-tool .query-condition--property-value .x-form-trigger-wrap,
+.query-tool .query-condition--property-value .x-panel-body,
+.query-tool .query-condition--property-value .x-grid-view {
+  background: #FAFAFA;
+  border-radius: 4px;
+}
+
+.query-tool .query-condition--comparator {
+  border-radius: 4px;
+}
+
+.query-tool .query-condition--property-value .x-form-text {
+  background: transparent;
+}
+
+.query-tool .query-boolean-switch {
+  padding: 7px 9px;
+}
+
+.query-tool .query-boolean-switch .x-form-checkbox {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 32px;
+  height: 18px;
+  border: 0;
+  border-radius: 9px;
+  background: #6b6b6b;
+  box-shadow: none;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.query-tool .query-boolean-switch .x-form-checkbox::before,
+.query-tool .query-boolean-switch.x-form-cb-checked .x-form-checkbox::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.query-tool .query-boolean-switch .x-form-checkbox::after {
+  content: none;
+}
+
+.query-tool .query-boolean-switch.x-form-cb-checked .x-form-checkbox {
+  background: #000000;
+}
+
+.query-tool .query-boolean-switch.x-form-cb-checked .x-form-checkbox::before {
+  left: 15px;
+}
+
+.query-tool .query-boolean-switch .x-form-checkbox:focus-visible {
+  outline: 2px solid #3d4242;
+  outline-offset: 2px;
+}
+
+.query-tool .query-boolean-switch .x-form-cb-label-after {
+  padding-left: 8px;
+  color: #000000;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 18px;
+  vertical-align: middle;
+}
+
+.query-tool .query-condition + .query-condition {
+  /* Reserve divider space above the widget, overriding its inline padding. */
+  padding-top: 40px !important;
+}
+
+.query-tool .query-condition + .query-condition::before {
+  content: "and";
+  color: #6b6b6b;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  line-height: 20px;
+  text-align: center;
+  background:
+    linear-gradient(#c8c6c6, #c8c6c6) left center / calc(50% - 24px) 1px no-repeat,
+    linear-gradient(#c8c6c6, #c8c6c6) right center / calc(50% - 24px) 1px no-repeat;
 }
 
 .query-tool .query-toolbar .tooltip-base {
@@ -44,15 +177,17 @@
   border: 1px solid #ffffff;
   border-radius: 2px;
 }
+
 .query-tool .query-toolbar .tooltip-base:hover {
   background-color:#c8c6c6;
   color: #000000;
   border-color:#c8c6c6;
 }
+
 .query-tool .query-toolbar .x-form-checkbox::before {
   color: #ffffff;
 }
+
 .query-tool .query-toolbar .x-item-disabled .x-form-checkbox::before {
   color: #c8c6c6;
 }
-

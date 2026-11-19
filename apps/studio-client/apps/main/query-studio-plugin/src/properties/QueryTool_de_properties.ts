@@ -1,14 +1,13 @@
-import ResourceBundleUtil from "@jangaroo/runtime/l10n/ResourceBundleUtil";
 import QueryTool_properties from "./QueryTool_properties";
 
-/**
- * Overrides of ResourceBundle "QueryTool" for Locale "de".
- * @see QueryTool_properties#INSTANCE
- */
-ResourceBundleUtil.override(QueryTool_properties, {
+Object.assign(QueryTool_properties, {
   Tab_QueryTool_title: "Recherche",
   Action_showQueryTool_text: "Recherche",
   conditionTitle: "Suchbedingung",
+  empty_results_title: "Keine Suchergebnisse",
+  QueryResultGrid_singleResult: "{0} Suchergebnis",
+  QueryResultGrid_multipleResults: "{0} Suchergebnisse",
+  empty_results_text: "Starten Sie eine Suche oder passen Sie die Suchbedingungen an.",
   column_status_title: "Status",
   column_doctype_title: "Dokumenttyp",
   column_id_title: "ID",
@@ -17,9 +16,9 @@ ResourceBundleUtil.override(QueryTool_properties, {
   label_showInLibrary: "In der Bibliothek öffnen",
   label_undelete: "Wiederherstellen",
   folder_label: "Ordner",
-  button_new: "Neue Bedingung hinzufügen",
+  button_add_condition_tooltip: "Neue Bedingung hinzufügen",
   button_remove: "Bedingung entfernen",
-  button_send: "Query absenden",
+  button_send_tooltip: "Query absenden",
   checkbox_subtypes: "Abgeleitete Dokumenttypen miteinbeziehen",
   combo_loadcount_label: "Anzahl Datensätze:",
   REFERENCED: "Wird verlinkt (allg.)",
@@ -81,12 +80,15 @@ ResourceBundleUtil.override(QueryTool_properties, {
   publ: "Publiziert",
   del: "Gelöscht",
   label_me: "mir",
+  button_page_first: "Erste Seite",
   button_page_prev: "Vorherige Seite",
   button_page_next: "Nächste Seite",
-  page_label: "Seite 0/0 (Einträge: 0-0/0)",
+  button_page_last: "Letzte Seite",
+  page_label: "/ 0 (Einträge: 0-0/0)",
   paging_label_items: "Einträge",
   paging_label_page: "Seite",
-  button_save_csv: "Angezeigte Suchergebnisse exportieren - CSV",
+  button_save_csv: "Angezeigte Suchergebnisse als CSV exportieren",
+  button_query_configuration_menu: "Aktionen für die Query-Konfiguration",
   button_save: "Query-Konfiguration speichern",
   button_load: "Query-Konfiguration laden",
   dialog_save_title: "Query-Konfiguration speichern",
@@ -94,4 +96,4 @@ ResourceBundleUtil.override(QueryTool_properties, {
   button_dialog_save: "Speichern",
   dialog_load_title: "Query-Konfiguration laden",
   button_dialog_load: "Laden",
-});
+} satisfies Partial<QueryTool_properties>);

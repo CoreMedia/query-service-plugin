@@ -1,12 +1,17 @@
+import { SvgIconUtil } from "@coremedia/studio-client.base-models";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
+import { trashBin } from "@coremedia/studio-client.common-icons";
+import IconButton from "@coremedia/studio-client.ext.ui-components/components/IconButton";
 import LocalComboBox from "@coremedia/studio-client.ext.ui-components/components/LocalComboBox";
 import BindPropertyPlugin from "@coremedia/studio-client.ext.ui-components/plugins/BindPropertyPlugin";
 import TextfieldSkin from "@coremedia/studio-client.ext.ui-components/skins/TextfieldSkin";
-import AnchorLayout from "@jangaroo/ext-ts/layout/container/Anchor";
-import Tool from "@jangaroo/ext-ts/panel/Tool";
+import Container from "@jangaroo/ext-ts/container/Container";
+import HBoxLayout from "@jangaroo/ext-ts/layout/container/HBox";
+import VBoxLayout from "@jangaroo/ext-ts/layout/container/VBox";
 import { bind } from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
+import QueryTool_properties from "../properties/QueryTool_properties";
 import QueryConditionBase from "./QueryConditionBase";
 
 interface QueryConditionConfig extends Config<QueryConditionBase>, Partial<Pick<QueryCondition,
@@ -28,21 +33,28 @@ class QueryCondition extends QueryConditionBase {
   constructor(config: Config<QueryCondition> = null) {
     super(((): any => ConfigUtils.apply(Config(QueryCondition, {
 
-      padding: "10px 10px 0 10px",
+      padding: "4px",
       componentCls: "query-condition",
 
       items: [
-        // first visible item of QueryCondition is a ComboBox with all document and system document properties available for filtering
         Config(LocalComboBox, {
+          itemId: "propertyName",
           name: "propertyName",
-          width: 300,
-          cls: "query-control",
-          margin: "0 0 0 0",
-          padding: "8px 0 0 0",
+          flex: 1,
+          minWidth: 0,
+          cls: "query-control query-condition--property-name",
           store: this.getPropertiesStore(config.docType, config.propertyTypeMapping),
           valueField: "name",
           displayField: "label",
+          typeAhead: true,
+          allowBlank: false,
+          anyMatch: true,
           tpl: QueryConditionBase.getComboBoxTemplate(),
+          beforeSubTpl: "<span class=\"query-condition-property-icon\" aria-hidden=\"true\"></span>",
+          listeners: {
+            afterrender: bind(this, this.updatePropertyIcon),
+            change: bind(this, this.updatePropertyIcon),
+          },
           ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
           ...ConfigUtils.append({
             plugins: [
@@ -54,16 +66,23 @@ class QueryCondition extends QueryConditionBase {
             ],
           }),
         }),
-      ],
-
-      tools: [
-        Config(Tool, {
-          type: "close",
+        Config(Container, {
+          itemId: QueryConditionBase.INPUTS_CONTAINER_ID,
+          flex: 2,
+          margin: "0 0 0 8px",
+          layout: Config(VBoxLayout, { align: "stretch" }),
+        }),
+        Config(IconButton, {
+          itemId: "removeCondition",
+          margin: "0 0 0 8px",
+          iconCls: SvgIconUtil.getIconStyleClassForSvgIcon(trashBin),
+          tooltip: QueryTool_properties.button_remove,
+          ariaLabel: QueryTool_properties.button_remove,
           handler: bind(this, this.removeCondition),
         }),
       ],
 
-      layout: Config(AnchorLayout),
+      layout: Config(HBoxLayout, { align: "top" }),
 
     }), config))());
   }
@@ -90,14 +109,14 @@ class QueryCondition extends QueryConditionBase {
     this.#docType = value;
   }
 
-  #propertyTypeMapping: Array<any> = null;
+  #propertyTypeMapping: Record<string, string> = null;
 
   // Array to store mapping for properties/types of properties
-  get propertyTypeMapping(): Array<any> {
+  get propertyTypeMapping(): Record<string, string> {
     return this.#propertyTypeMapping;
   }
 
-  set propertyTypeMapping(value: Array<any>) {
+  set propertyTypeMapping(value: Record<string, string>) {
     this.#propertyTypeMapping = value;
   }
 

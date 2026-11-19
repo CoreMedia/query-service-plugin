@@ -7,6 +7,9 @@ catalog:
   '@coremedia/studio-client.cap-base-models': 2512.0.0
   '@coremedia/studio-client.cap-rest-client': 2512.0.0
   '@coremedia/studio-client.client-core': 2512.0.0
+  '@coremedia/studio-client.common-icons': ^2.2.0
+  '@coremedia/studio-client.ext.animation-components': 2512.0.0
+  '@coremedia/studio-client.ext.base-components': 2512.0.0
   '@coremedia/studio-client.ext.cap-base-components': 2512.0.0
   '@coremedia/studio-client.ext.errors-validation-components': 2512.0.0
   '@coremedia/studio-client.ext.eslint-config': 2512.0.0
@@ -15,6 +18,7 @@ catalog:
   '@coremedia/studio-client.ext.link-list-components': 2512.0.0
   '@coremedia/studio-client.ext.ui-components': 2512.0.0
   '@coremedia/studio-client.link-list-models': 2512.0.0
+  '@coremedia/studio-client.main.control-room-editor-components': 2512.0.0
   '@coremedia/studio-client.main.editor-components': 2512.0.0
   '@coremedia/studio-client.multi-site-models': 2512.0.0
   '@jangaroo/build': ^3.4.1

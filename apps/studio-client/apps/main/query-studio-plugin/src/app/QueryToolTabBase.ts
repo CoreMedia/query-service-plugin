@@ -9,20 +9,18 @@ import ContentType from "@coremedia/studio-client.cap-rest-client/content/Conten
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import beanFactory from "@coremedia/studio-client.client-core/data/beanFactory";
-import RemoteService from "@coremedia/studio-client.client-core/data/impl/RemoteService";
 import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
 import Ext from "@jangaroo/ext-ts";
-import ObjectUtil from "@jangaroo/ext-ts/Object";
 import Store from "@jangaroo/ext-ts/data/Store";
 import AjaxProxy from "@jangaroo/ext-ts/data/proxy/Ajax";
 import Panel from "@jangaroo/ext-ts/panel/Panel";
-import SorterCollection from "@jangaroo/ext-ts/util/SorterCollection";
 import { as, bind, is } from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
 import int from "@jangaroo/runtime/int";
 import QueryPanel from "./QueryPanel";
-import QueryPanelBase from "./QueryPanelBase";
 import QueryToolTab from "./QueryToolTab";
+import QueryToolUtil from "../util/QueryToolUtil";
+import QueryToolManager from "../QueryToolManager";
 
 interface QueryToolTabBaseConfig extends Config<Panel> {
 }
@@ -61,20 +59,6 @@ class QueryToolTabBase extends Panel {
 
   static readonly COLUMN_NAME_PATH: string = "parent";
 
-  static readonly DEFAULT_VALUE_DOCUMENT_TYPE: string = "Document_";
-
-  static readonly DEFAULT_VALUE_LOAD_COUNT: int = 50;
-
-  static readonly DEFAULT_VALUE_MAX_COUNT: int = -1;
-
-  static readonly DEFAULT_VALUE_PAGE: int = 1;
-
-  static readonly DEFAULT_VALUE_QUERY_DATA: Array<any> = [];
-
-  static readonly DEFAULT_VALUE_SEND_QUERY: boolean = false;
-
-  static readonly DEFAULT_VALUE_TOTAL_COUNT: int = -1;
-
   static readonly COLUMN_NAME_STATUS: string = "status";
 
   #storeValueExpression: ValueExpression = null;
@@ -85,19 +69,9 @@ class QueryToolTabBase extends Panel {
 
   #selectedContentValueExpression: ValueExpression = null;
 
-  #contentTypeValueExpression: ValueExpression = null;
-
   #isAbstractContentTypeValueExpression: ValueExpression = null;
 
-  #includeSubTypesValueExpression: ValueExpression = null;
-
-  #loadCountValueExpression: ValueExpression = null;
-
   #maxCountValueExpression: ValueExpression = null;
-
-  #pageValueExpression: ValueExpression = null;
-
-  #queryDataValueExpression: ValueExpression = null;
 
   #sendQueryValueExpression: ValueExpression = null;
 
@@ -105,12 +79,13 @@ class QueryToolTabBase extends Panel {
 
   #undeleteValueExpression: ValueExpression = null;
 
-  #userValueExpression: ValueExpression = null;
-
-  #queryPanel: QueryPanel = null;
-
   constructor(config: Config<QueryToolTab> = null) {
     super(config || {});
+  }
+
+  protected override afterRender(): any {
+    QueryToolManager.getInstance().getPageValueExpression().addChangeListener(bind(this, this.onPaging));
+    return super.afterRender();
   }
 
   /******************************
@@ -125,7 +100,7 @@ class QueryToolTabBase extends Panel {
    */
   protected getSelectedValueExpression(): ValueExpression {
     if (!this.#selectedValueExpression) {
-      this.#selectedValueExpression = ValueExpressionFactory.createFromValue(null);
+      this.#selectedValueExpression = ValueExpressionFactory.createFromValue([]);
     }
     return this.#selectedValueExpression;
   }
@@ -144,24 +119,10 @@ class QueryToolTabBase extends Panel {
     return this.#selectedContentValueExpression;
   }
 
-  /**
-   * Initialising ValueExpression
-   * Contains the selected ContentType of the query (dropdown)
-   *
-   * Default: "Document_"
-   * @return ValueExpression
-   */
-  protected getContentTypeValueExpression(): ValueExpression {
-    if (!this.#contentTypeValueExpression) {
-      this.#contentTypeValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_DOCUMENT_TYPE);
-    }
-    return this.#contentTypeValueExpression;
-  }
-
   protected getIsAbstractContentTypeValueExpression(): ValueExpression {
     if (!this.#isAbstractContentTypeValueExpression) {
       this.#isAbstractContentTypeValueExpression = ValueExpressionFactory.createFromFunction((): boolean => {
-        const contentTypeString: string = this.getContentTypeValueExpression().getValue();
+        const contentTypeString: string = QueryToolManager.getInstance().getContentTypeValueExpression().getValue();
         if (is(contentTypeString, String) && contentTypeString.length > 0) {
           const contentType: ContentType = session._.getConnection().getContentRepository().getContentType(contentTypeString);
           return is(contentType, ContentType) && contentType.isAbstract();
@@ -170,39 +131,11 @@ class QueryToolTabBase extends Panel {
       });
       this.#isAbstractContentTypeValueExpression.addChangeListener((ve: ValueExpression): void => {
         if (is(ve.getValue(), Boolean) && ve.getValue()) {
-          this.getIncludeSubTypesValueExpression().setValue(true);
+          QueryToolManager.getInstance().getIncludeSubTypesValueExpression().setValue(true);
         }
       });
     }
     return this.#isAbstractContentTypeValueExpression;
-  }
-
-  /**
-   * Initialising ValueExpression
-   * Indicates if the query should deliver results including documents of a subtype of the selected content type.
-   *
-   * Default: "true"
-   * @return ValueExpression
-   */
-  protected getIncludeSubTypesValueExpression(): ValueExpression {
-    if (!this.#includeSubTypesValueExpression) {
-      this.#includeSubTypesValueExpression = ValueExpressionFactory.createFromValue(true);
-    }
-    return this.#includeSubTypesValueExpression;
-  }
-
-  /**
-   * Initialising ValueExpression
-   * Contains the number of data sets to load for visualising in the grid
-   *
-   * Default: 50
-   * @return ValueExpression
-   */
-  protected getLoadCountValueExpression(): ValueExpression {
-    if (!this.#loadCountValueExpression) {
-      this.#loadCountValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_LOAD_COUNT);
-    }
-    return this.#loadCountValueExpression;
   }
 
   /**
@@ -213,36 +146,9 @@ class QueryToolTabBase extends Panel {
    */
   protected getMaxCountValueExpression(): ValueExpression {
     if (!this.#maxCountValueExpression) {
-      this.#maxCountValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_MAX_COUNT);
+      this.#maxCountValueExpression = ValueExpressionFactory.createFromValue(QueryToolUtil.DEFAULT_VALUE_MAX_COUNT);
     }
     return this.#maxCountValueExpression;
-  }
-
-  /**
-   * Initialising ValueExpression
-   * Contains the number of the active page of the paging
-   *
-   * @return ValueExpression
-   */
-  protected getPageValueExpression(): ValueExpression {
-    if (!this.#pageValueExpression) {
-      this.#pageValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_PAGE);
-      this.#pageValueExpression.addChangeListener(bind(this, this.onPaging));
-    }
-    return this.#pageValueExpression;
-  }
-
-  /**
-   * Initialising ValueExpression
-   * Contains an array of the data sets (JSON-Objects) of the query conditions
-   *
-   * @return ValueExpression
-   */
-  protected getQueryDataValueExpression(): ValueExpression {
-    if (!this.#queryDataValueExpression) {
-      this.#queryDataValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_QUERY_DATA);
-    }
-    return this.#queryDataValueExpression;
   }
 
   /**
@@ -253,7 +159,7 @@ class QueryToolTabBase extends Panel {
    */
   protected getSendQueryValueExpression(): ValueExpression {
     if (!this.#sendQueryValueExpression) {
-      this.#sendQueryValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_SEND_QUERY);
+      this.#sendQueryValueExpression = ValueExpressionFactory.createFromValue(QueryToolUtil.DEFAULT_VALUE_SEND_QUERY);
       this.#sendQueryValueExpression.addChangeListener(bind(this, this.onSendQuery));
     }
     return this.#sendQueryValueExpression;
@@ -268,7 +174,7 @@ class QueryToolTabBase extends Panel {
    */
   protected getTotalCountValueExpression(): ValueExpression {
     if (!this.#totalCountValueExpression) {
-      this.#totalCountValueExpression = ValueExpressionFactory.createFromValue(QueryToolTabBase.DEFAULT_VALUE_TOTAL_COUNT);
+      this.#totalCountValueExpression = ValueExpressionFactory.createFromValue(QueryToolUtil.DEFAULT_VALUE_TOTAL_COUNT);
     }
     return this.#totalCountValueExpression;
   }
@@ -285,19 +191,6 @@ class QueryToolTabBase extends Panel {
       this.#undeleteValueExpression.addChangeListener(bind(this, this.undeleteContent));
     }
     return this.#undeleteValueExpression;
-  }
-
-  /**
-   * Initialising ValueExpression
-   * Contains the active user
-   *
-   * @return ValueExpression
-   */
-  protected getUserValueExpression(): ValueExpression {
-    if (!this.#userValueExpression) {
-      this.#userValueExpression = ValueExpressionFactory.createFromValue(session._.getUser());
-    }
-    return this.#userValueExpression;
   }
 
   /**
@@ -329,11 +222,11 @@ class QueryToolTabBase extends Panel {
    */
   protected onSendQuery(): void {
     if (this.#sendQueryValueExpression.getValue()) {
-      if (this.#pageValueExpression.getValue() === QueryToolTabBase.DEFAULT_VALUE_PAGE) {
+      if (QueryToolManager.getInstance().getPageValueExpression().getValue() === QueryToolUtil.DEFAULT_VALUE_PAGE) {
         this.reload();
       } else {
         // trigger reload over paging to guarantee the right page number
-        this.#pageValueExpression.setValue(QueryToolTabBase.DEFAULT_VALUE_PAGE);
+        QueryToolManager.getInstance().getPageValueExpression().setValue(QueryToolUtil.DEFAULT_VALUE_PAGE);
       }
     }
   }
@@ -353,9 +246,6 @@ class QueryToolTabBase extends Panel {
    */
   protected onStoreReload(): void {
     this.#sendQueryValueExpression.setValue(false);
-    // writing the paging label
-    if (!this.#queryPanel) this.#queryPanel = as(this.queryById(QueryPanelBase.QUERY_PANEL_ID), QueryPanel);
-    if (this.#queryPanel) this.#queryPanel.writeLabel();
   }
 
   /**
@@ -363,73 +253,28 @@ class QueryToolTabBase extends Panel {
    * Collecting data, change the proxy parameters and reload the store.
    */
   protected reload(): void {
-    const queryData: Array<any> = this.getQueryDataValueExpression().getValue();
+    const queryData: any[] = QueryToolManager.getInstance().getQueryDataValueExpression().getValue() || [];
     const query: string = JSON.stringify(queryData);
-    const contentType: string = this.getContentTypeValueExpression().getValue();
-    const resultLimit: int = this.getLoadCountValueExpression().getValue();
+    const contentType: string = QueryToolManager.getInstance().getContentTypeValueExpression().getValue();
+    const resultLimit: int = QueryToolManager.getInstance().getLoadCountValueExpression().getValue();
     // @ts-ignore
     const httpProxy: AjaxProxy = as(this.#store.getProxy(), AjaxProxy);
 
     httpProxy.setExtraParams({
       queryjson: query,
       ctype: contentType,
-      includeSubs: this.getIncludeSubTypesValueExpression().getValue(),
-      page: this.#pageValueExpression.getValue(),
-      max: resultLimit ? resultLimit : QueryToolTabBase.DEFAULT_VALUE_LOAD_COUNT,
+      includeSubs: QueryToolManager.getInstance().getIncludeSubTypesValueExpression().getValue(),
+      page: QueryToolManager.getInstance().getPageValueExpression().getValue(),
+      max: resultLimit ? resultLimit : QueryToolUtil.DEFAULT_VALUE_LOAD_COUNT,
     });
     this.#store.load();
-  }
-
-  /**
-   * Trigger download of the query results as CSV file.
-   */
-  download(): void {
-    const resultLimit: int = this.getLoadCountValueExpression().getValue();
-    const queryDataVE: ValueExpression = this.getQueryDataValueExpression();
-    const queryData: Array<any> = queryDataVE.getValue();
-    const query: string = JSON.stringify(queryData);
-    const contentType: string = this.getContentTypeValueExpression().getValue();
-    const paramObject: Record<string, any> = {
-      queryjson: query,
-      ctype: contentType,
-      includeSubs: this.getIncludeSubTypesValueExpression().getValue(),
-      page: this.#pageValueExpression.getValue(),
-      max: resultLimit ? resultLimit : QueryToolTabBase.DEFAULT_VALUE_TOTAL_COUNT,
-    };
-    const sorters: SorterCollection = this.#store.getSorters();
-    if (sorters && sorters.getCount() > 0) paramObject["sort"] = QueryToolTabBase.getSortDataJSON(sorters);
-
-    const url = RemoteService.calculateRequestURI("/rest/api/plugins/query-service-lib/qsrest/queryToCSV?" + ObjectUtil.toQueryString(paramObject));
-    window.open(url, "QueryCSVDownload");
-  }
-
-  /**
-   * Building a JSON-Array as String of the grid sorters.
-   * @param sorters
-   *
-   * @return String - JSON-Array as String
-   */
-  protected static getSortDataJSON(sorters: SorterCollection): string {
-
-    let jsonArray: string = "";
-
-    if (sorters && sorters.getCount() > 0) {
-      jsonArray = "[";
-      for (let i: number = 0; i < sorters.getCount(); i++) {
-        const sorter: any = sorters.getAt(i);
-        jsonArray += "{\"property\":\"" + sorter._property + "\",\"direction\":\"" + sorter._direction + "\"}";
-        if (i < sorters.getCount() - 1) jsonArray += ",";
-      }
-      jsonArray += "]";
-    }
-    return jsonArray;
   }
 
   /**
    * Trigger undelete of deleted documents.
    */
   undeleteContent(): void {
-    const toBeUndeleted: Array<any> = this.getUndeleteValueExpression().getValue();
+    const toBeUndeleted: any[] = this.getUndeleteValueExpression().getValue() || [];
     if (Ext.isArray(toBeUndeleted)) {
       const remoteServiceMethod: RemoteServiceMethod = new RemoteServiceMethod("/rest/api/plugins/query-service-lib/qsrest/undelete", "GET");
       const params: Record<string, any> = { contentIds: QueryToolTabBase.#getContentIds(toBeUndeleted) };
@@ -445,8 +290,8 @@ class QueryToolTabBase extends Panel {
     }
   }
 
-  static #getContentIds(contents: Array<any>): Array<any> {
-    const contentIds: Array<any> = [];
+  static #getContentIds(contents: any[]): any[] {
+    const contentIds: any[] = [];
     if (Ext.isArray(contents) && contents.length > 0) {
       for (let c = 0; c < contents.length; c++) {
         const content: Content = contents[c];
