@@ -25,12 +25,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Offers access to ContentRepository to filter Content with keywords.
@@ -55,11 +59,14 @@ public class QueryResource implements PluginRestController {
 
   ContentRepository contentRepository;
   QueryService queryService;
+  QueryAccessPolicy accessPolicy;
 
   public QueryResource(
-    ContentRepository contentRepository
+    ContentRepository contentRepository,
+    QueryAccessPolicy accessPolicy
   ) {
     this.contentRepository = contentRepository;
+    this.accessPolicy = accessPolicy;
     this.queryService = contentRepository.getQueryService();
   }
 
@@ -71,7 +78,9 @@ public class QueryResource implements PluginRestController {
                           @RequestParam(INCLUDE_SUBTYPES) boolean includeSubtypes,
                           @RequestParam(MAX) int resultLimit,
                           @RequestParam(PAGE) int page,
-                          @RequestParam(value = SORT, required = false) GridSortData sortData) {
+                          @RequestParam(value = SORT, required = false) GridSortData sortData,
+                          Principal principal) {
+    checkAccess(principal);
 
     Collection<Content> contents = getQueryCollection(queryData, contentType, includeSubtypes, resultLimit, page, sortData);
 
@@ -179,7 +188,9 @@ public class QueryResource implements PluginRestController {
                                           @RequestParam(INCLUDE_SUBTYPES) boolean includeSubtypes,
                                           @RequestParam(MAX) int resultLimit,
                                           @RequestParam(PAGE) int page,
-                                          @RequestParam(value = SORT, required = false) GridSortData sortData) throws Exception {
+                                          @RequestParam(value = SORT, required = false) GridSortData sortData,
+                                          Principal principal) throws Exception {
+    checkAccess(principal);
 
     Collection<Content> contents = getQueryCollection(queryData, contentType, includeSubtypes, resultLimit, page, sortData);
 
@@ -204,7 +215,8 @@ public class QueryResource implements PluginRestController {
     value = "undelete",
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<byte[]> undelete(@RequestParam(CM_IDS) List<String> contentIds) {
+  public ResponseEntity<byte[]> undelete(@RequestParam(CM_IDS) List<String> contentIds, Principal principal) {
+    checkAccess(principal);
 
     boolean success = true;
 
@@ -232,7 +244,8 @@ public class QueryResource implements PluginRestController {
     value = "users",
     produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<Collection<User>> getAllUsers() {
+  public ResponseEntity<Collection<User>> getAllUsers(Principal principal) {
+    checkAccess(principal);
 
     UserRepository userRepository = contentRepository.getConnection().getUserRepository();
     Collection<User> users = null;
@@ -244,5 +257,22 @@ public class QueryResource implements PluginRestController {
     responseHeaders.add("Content-Type",  MediaType.APPLICATION_JSON_VALUE);
 
     return new ResponseEntity<>(users != null ? users : Collections.EMPTY_LIST, responseHeaders, HttpStatus.OK);
+  }
+
+  /**
+   * Tells the Studio client whether the current user may use the query tool.
+   */
+  @GetMapping(
+    value = "access",
+    produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  public ResponseEntity<Map<String, Boolean>> access(Principal principal) {
+    return ResponseEntity.ok(Map.of("allowed", accessPolicy.isAllowed(principal)));
+  }
+
+  private void checkAccess(Principal principal) {
+    if (!accessPolicy.isAllowed(principal)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not allowed to use the query tool");
+    }
   }
 }

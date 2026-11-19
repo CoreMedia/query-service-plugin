@@ -29,6 +29,7 @@ module.exports = jangarooConfig({
           cmCategory: "Content",
           name: "Query Tool",
           cmAdministrative: true,
+          cmGroups: ["administratoren", "developer", "query-tool-user"],
         },
       ],
     },
