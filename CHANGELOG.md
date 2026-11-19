@@ -1,12 +1,10 @@
 # Changelog
 
-## Unreleased
-
-* Restrict the Query Tool to members of the groups `administratoren`, `developer` and `query-tool-user`. The groups are configurable via the studio-server property `query-service.allowed-groups`. The REST endpoints reject other users with 403 and the Studio client only activates for permitted users.
-
 ## 3.0.0
 
 * Update to CMCC 13 2512.0.0
+* Refresh the Query Tool builder and results grid with content actions, an empty-results view, localized result counts, and direct page navigation.
+* Restrict the Query Tool to members of the groups `administratoren`, `developer` and `query-tool-user`. The groups are configurable via the studio-server property `query-service.allowed-groups`. The REST endpoints reject other users with 403 and the Studio client only activates for permitted users.
 * Use Java 21 SDK
 * Use Node 24.x
 
