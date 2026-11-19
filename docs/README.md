@@ -1,4 +1,4 @@
-![CoreMedia Content Cloud Version](https://img.shields.io/static/v1?message=12|13&label=CoreMedia%20Content%20Cloud&style=for-the-badge&labelColor=666666&color=672779 "This badge shows the CoreMedia version this project is compatible with.
+![CoreMedia Content Cloud Version](https://img.shields.io/static/v1?message=12%7C13&label=CoreMedia%20Content%20Cloud&style=for-the-badge&labelColor=666666&color=672779 "This badge shows the CoreMedia version this project is compatible with.
 Please read the versioning section of the project to see what other CoreMedia versions are supported and how to find them.")
 
 # Query Service

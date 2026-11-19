@@ -1,3 +1,9 @@
+import { SvgIconUtil } from "@coremedia/studio-client.base-models";
+import csvIcon from "../icons/csv.svg";
+import fileSaveIcon from "../icons/file-save.svg";
+import fileOpenIcon from "../icons/file-open.svg";
+import { search } from "@coremedia/studio-client.common-icons";
+import documentSearchIcon from "../icons/document-search.svg";
 
 /**
  * Interface values for ResourceBundle "QueryTool".
@@ -6,36 +12,42 @@
 interface QueryTool_properties {
 
   Tab_QueryTool_title: string;
+  Tab_QueryTool_icon: string;
   Action_showQueryTool_text: string;
   conditionTitle: string;
-/**
- *grid columns
- */
+  empty_results_title: string;
+  empty_results_text: string;
+  /**
+   *grid columns
+   */
   column_status_title: string;
   column_doctype_title: string;
   column_id_title: string;
   column_title_title: string;
   column_path_title: string;
-/**
- *action
- */
+  /**
+   *action
+   */
   label_showInLibrary: string;
   label_undelete: string;
-/**
- *docTypes
- */
+  /**
+   *docTypes
+   */
   folder_label: string;
-/**
- *toolbar
- */
-  button_new: string;
+  /**
+   *toolbar
+   */
+  button_add_condition_text: string;
+  button_add_condition_tooltip: string;
   button_remove: string;
-  button_send: string;
+  button_send_text: string;
+  button_send_tooltip: string;
+  button_send_icon: string;
   checkbox_subtypes: string;
   combo_loadcount_label: string;
-/**
- *properties
- */
+  /**
+   *properties
+   */
   REFERENCED: string;
   REFERENCES: string;
   REFERENCED_BY: string;
@@ -68,9 +80,9 @@ interface QueryTool_properties {
   placeApprover: string;
   publicationName: string;
   publicationParent: string;
-/**
- *mapping siehe: https://support.coremedia.com/hc/en-us/requests/47255
- */
+  /**
+   *mapping siehe: https://support.coremedia.com/hc/en-us/requests/47255
+   */
   publicationDate: string;
   publisher: string;
   isPublished: string;
@@ -81,9 +93,9 @@ interface QueryTool_properties {
   versionPublicationDate: string;
   versionPublisher: string;
   versionEditionDate: string;
-/**
- *comparator options
- */
+  /**
+   *comparator options
+   */
   CONTAINS: string;
   NOT_CONTAINS: string;
   EQUAL: string;
@@ -94,44 +106,57 @@ interface QueryTool_properties {
   GREATER_EQUAL: string;
   EXISTS: string;
   NOT_EXISTS: string;
-/**
- *REFERENCES=references
- */
+  /**
+   *REFERENCES=references
+   */
   NOT_REFERENCES: string;
-/**
- *status
- */
+  /**
+   *status
+   */
   prod: string;
   cout: string;
   appr: string;
   publ: string;
   del: string;
   label_me: string;
-/**
- *paging
- */
+  /**
+   *paging
+   */
+  button_page_first: string;
   button_page_prev: string;
   button_page_next: string;
+  button_page_last: string;
   page_label: string;
   paging_label_items: string;
   paging_label_page: string;
-/**
- *csv
- */
+  /**
+   *csv
+   */
   button_save_csv: string;
+  button_save_csv_icon: string;
+  button_query_configuration_menu: string;
   button_save: string;
+  button_save_icon: string;
   button_load: string;
-/**
- *save dialog
- */
+  button_load_icon: string;
+  /**
+   *save dialog
+   */
   dialog_save_title: string;
   textField_name_label: string;
   button_dialog_save: string;
-/**
- *load dialog
- */
+  /**
+   *load dialog
+   */
   dialog_load_title: string;
   button_dialog_load: string;
+
+  QueryPanel_title: string;
+  QueryResultGrid_singleResult: string;
+  QueryResultGrid_multipleResults: string;
+
+  QueryStringPropertyField_emptyText: string;
+  QueryIntegerPropertyField_emptyText: string;
 }
 
 /**
@@ -139,9 +164,15 @@ interface QueryTool_properties {
  * @see QueryTool_properties
  */
 const QueryTool_properties: QueryTool_properties = {
+  QueryPanel_title: "Query for",
+  QueryResultGrid_singleResult: "{0} Result",
+  QueryResultGrid_multipleResults: "{0} Results",
   Tab_QueryTool_title: "Query Tool",
+  Tab_QueryTool_icon: SvgIconUtil.getIconStyleClassForSvgIcon(documentSearchIcon),
   Action_showQueryTool_text: "Query Tool",
   conditionTitle: "Query Condition",
+  empty_results_title: "No query results",
+  empty_results_text: "Run a query or adjust its conditions to find results.",
   column_status_title: "Status",
   column_doctype_title: "DocType",
   column_id_title: "Content ID",
@@ -150,9 +181,12 @@ const QueryTool_properties: QueryTool_properties = {
   label_showInLibrary: "Show in library",
   label_undelete: "Undelete",
   folder_label: "Folder",
-  button_new: "add new query condition",
-  button_remove: "remove query condition",
-  button_send: "send query",
+  button_add_condition_text: "Add Query Condition ...",
+  button_add_condition_tooltip: "Add a new query condition",
+  button_remove: "Remove query condition",
+  button_send_text: "Run Query",
+  button_send_tooltip: "Run query with the current conditions",
+  button_send_icon: SvgIconUtil.getIconStyleClassForSvgIcon(search),
   checkbox_subtypes: "Include subtypes",
   combo_loadcount_label: "Number of items to load:",
   REFERENCED: "is referenced",
@@ -214,19 +248,27 @@ const QueryTool_properties: QueryTool_properties = {
   publ: "Published",
   del: "Deleted",
   label_me: "me",
+  button_page_first: "Show first page",
   button_page_prev: "show previous page",
   button_page_next: "show next page",
-  page_label: "page 0/0 (items: 0-0/0)",
+  button_page_last: "Show last page",
+  page_label: "/ 0 (items: 0-0/0)",
   paging_label_items: "items",
   paging_label_page: "page",
-  button_save_csv: "export query results - CSV",
-  button_save: "save query configuration",
-  button_load: "load query configuration",
-  dialog_save_title: "Save query configuration",
+  button_save_csv: "Export query results as CSV",
+  button_save_csv_icon: SvgIconUtil.getIconStyleClassForSvgIcon(csvIcon),
+  button_query_configuration_menu: "Query configuration actions",
+  button_save: "Save Query Configuration",
+  button_save_icon: SvgIconUtil.getIconStyleClassForSvgIcon(fileSaveIcon),
+  button_load: "Load Query Configuration",
+  button_load_icon: SvgIconUtil.getIconStyleClassForSvgIcon(fileOpenIcon),
+  dialog_save_title: "Save Query Configuration",
   textField_name_label: "name of the query-data file",
   button_dialog_save: "Save",
-  dialog_load_title: "Load query configuration",
+  dialog_load_title: "Load Query Configuration",
   button_dialog_load: "Load",
+  QueryStringPropertyField_emptyText: "Enter text here.",
+  QueryIntegerPropertyField_emptyText: "Enter a number here.",
 };
 
 export default QueryTool_properties;

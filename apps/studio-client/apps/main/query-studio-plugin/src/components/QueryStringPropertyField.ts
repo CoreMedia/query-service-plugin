@@ -4,6 +4,8 @@ import TextField from "@jangaroo/ext-ts/form/field/Text";
 import { is } from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
+import TextfieldSkin from "@coremedia/studio-client.ext.ui-components/skins/TextfieldSkin";
+import QueryTool_properties from "../properties/QueryTool_properties";
 
 interface QueryStringPropertyFieldConfig extends Config<TextField>, Partial<Pick<QueryStringPropertyField,
   "bindTo"
@@ -20,10 +22,10 @@ class QueryStringPropertyField extends TextField {
 
   constructor(config: Config<QueryStringPropertyField> = null) {
     super(ConfigUtils.apply(Config(QueryStringPropertyField, {
-
+      cls: "query-control query-condition--string-value",
+      emptyText: config.emptyText ? config.emptyText : QueryTool_properties.QueryStringPropertyField_emptyText,
       hideLabel: true,
-      emptyText: config.emptyText,
-
+      ui: TextfieldSkin.SEMI_TRANSPARENT.getSkin(),
       plugins: [
         Config(BindPropertyPlugin, {
           bindTo: config.bindTo,

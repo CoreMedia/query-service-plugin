@@ -4,6 +4,7 @@ import BindPropertyPlugin from "@coremedia/studio-client.ext.ui-components/plugi
 import IntegerPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/IntegerPropertyField";
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
+import QueryTool_properties from "../properties/QueryTool_properties";
 
 interface QueryIntegerPropertyFieldConfig extends Config<StatefulNumberField>, Partial<Pick<QueryIntegerPropertyField,
   "bindTo"
@@ -28,6 +29,7 @@ class QueryIntegerPropertyField extends StatefulNumberField {
       hideTrigger: true,
       maxValue: IntegerPropertyField.MAX_VALUE,
       minValue: IntegerPropertyField.MIN_VALUE,
+      emptyText: config.emptyText ? config.emptyText : QueryTool_properties.QueryIntegerPropertyField_emptyText,
 
       plugins: [
         Config(BindPropertyPlugin, {

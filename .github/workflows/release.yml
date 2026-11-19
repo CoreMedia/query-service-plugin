@@ -29,29 +29,31 @@ jobs:
           git config --global user.name 'coremedia-ci'
           git config --global user.email 'coremedia-ci@coremedia.com'
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'adopt'
           server-id: coremedia.external.releases
           server-username: PLUGINS_NEXUS_USER
           server-password: PLUGINS_NEXUS_PASSWORD
           cache: 'maven'
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
-          version: 9.3
+          version: 10
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: "apps/studio-client/pnpm-lock.yaml"
 
       - name: Setup registry npm.coremedia.io
         run: |
-          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data "{\"name\": \"${{ secrets.CM_NPM_USER }}\", \"password\": \"${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}\"}" https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
+          NPM_AUTH_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data '{"name": "${{ secrets.CM_NPM_USER }}", "password": "${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}"}' https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
           echo "::add-mask::$NPM_AUTH_TOKEN"
           pnpm config set //npm.coremedia.io/:_authToken=$NPM_AUTH_TOKEN
           pnpm config set @coremedia:registry=https://npm.coremedia.io
@@ -76,9 +78,10 @@ jobs:
 
           git add .
           git commit -m "set release version: ${release_version}"
-          git tag "v${release_version}"
+          release_tag="v${release_version}"
+          git tag "${release_tag}"
           echo "version=${release_version}" >> $GITHUB_OUTPUT
-          echo "tag=v${release_version}" >> $GITHUB_OUTPUT
+          echo "tag=${release_tag}" >> $GITHUB_OUTPUT
 
       - name: Build with Pnpm
         working-directory: apps/studio-client
@@ -90,7 +93,7 @@ jobs:
         env:
           PLUGINS_NEXUS_USER: ${{ secrets.PLUGINS_NEXUS_USER }}
           PLUGINS_NEXUS_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots install
 
       - name: Push Release Tag
         if: ${{ github.event.inputs.dry_run == 'false' }}
