@@ -1,6 +1,6 @@
 {
   "name": "@coremedia-blueprint/studio-client.main.query-studio-plugin",
-  "version": "3.0.0-SNAPSHOT",
+  "version": "3.0.0",
   "author": "CoreMedia GmbH",
   "license": "CoreMedia Open Source License",
   "private": true,
