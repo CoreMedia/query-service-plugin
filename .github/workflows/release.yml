@@ -22,11 +22,11 @@ jobs:
       - name: Validate OCI registry credentials
         if: ${{ !inputs.dry_run }}
         env:
-          REGISTRY_USERNAME: ${{ secrets.PLUGINS_NEXUS_USER }}
-          REGISTRY_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+          REGISTRY_USERNAME: ${{ secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD }}
         run: |
           if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
-            echo "::error::PLUGINS_NEXUS_USER and PLUGINS_NEXUS_PASSWORD must be configured."
+            echo "::error::NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME and NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD must be configured."
             exit 1
           fi
 
@@ -131,18 +131,19 @@ jobs:
           done
           echo "${RESULT}" > "target/bundle/query-service-${VERSION}.json"
 
-      - name: Build and publish OCI plugin artifacts
+      - name: Publish OCI plugin artifacts
+        if: ${{ !inputs.dry_run }}
         uses: CoreMedia/oci-tooling/actions/release-plugins@b55a15495088c1e272f134f5e413d1ca9e0df5ca # v0.1.0
         with:
           plugin-name: query-service
           plugin-descriptor: query-service.json
           version: ${{ steps.set-release-version.outputs.version }}
-          registry-username: ${{ secrets.PLUGINS_NEXUS_USER }}
-          registry-password: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
-          push: ${{ !inputs.dry_run }}
+          registry-username: ${{ secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME }}
+          registry-password: ${{ secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD }}
 
       - name: Remove OCI build files
         # keep them out of the next snapshot version commit
+        if: ${{ !inputs.dry_run }}
         run: rm -rf .oci-build build-plugin.sh
 
       - name: Set Next Snapshot Version

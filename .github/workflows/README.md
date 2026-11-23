@@ -17,9 +17,8 @@ The version is computed by removing the `-SNAPSHOT` suffix.
 The workflow creates a tag and attaches the release artifacts to it.
 It also uses the pinned
 [`release-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.1.0/actions/release-plugins)
-to package the plugin ZIPs as OCI artifacts. Dry runs only build the OCI
-artifacts; real releases push them and require the registry secrets described
-below.
+to publish the plugin ZIPs as OCI artifacts to the public registry. Dry runs
+skip this step; real releases require the registry secrets described below.
 Afterwards the next snapshot-version is created and pushed.
 
 Republishing existing releases as OCI
@@ -37,9 +36,12 @@ token with `contents: read`. The release must contain
 assets referenced by that descriptor. No source checkout, Maven build, new
 Git tag, or GitHub release is created.
 
-Make the `PLUGINS_NEXUS_USER` and `PLUGINS_NEXUS_PASSWORD` repository or
-organization secrets available to this repository, with write access to the
-selected registry. Public artifacts are pushed through
+Two organization or repository secret pairs must be available to this
+repository: `NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME` and
+`NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD` for the public registry, and
+`NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER` and
+`NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD` for the ephemeral registry.
+The workflows use the pair matching the target registry. Public artifacts are pushed through
 `repository.coremedia.com/public-images` and pulled from
 `container-registry.coremedia.com`; ephemeral artifacts use
 `repository.coremedia.com/ephemeral-images` and

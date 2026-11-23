@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Existing release version (e.g., v1.0.4 or 1.0.4)'
+        description: 'Existing release version (e.g., v3.0.0 or 3.0.0)'
         type: string
         required: true
       target-registry:
@@ -30,8 +30,8 @@ jobs:
         env:
           RELEASE_VERSION: ${{ inputs.version }}
           TARGET_REGISTRY: ${{ inputs.target-registry }}
-          REGISTRY_USERNAME: ${{ secrets.PLUGINS_NEXUS_USER }}
-          REGISTRY_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+          REGISTRY_USERNAME: ${{ inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME || secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER }}
+          REGISTRY_PASSWORD: ${{ inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD || secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD }}
         run: |
           VERSION="${RELEASE_VERSION#v}"
           if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
@@ -43,7 +43,11 @@ jobs:
             exit 1
           fi
           if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
-            echo "::error::PLUGINS_NEXUS_USER and PLUGINS_NEXUS_PASSWORD must be configured."
+            if [[ "$TARGET_REGISTRY" == public ]]; then
+              echo "::error::NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME and NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD must be configured."
+            else
+              echo "::error::NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER and NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD must be configured."
+            fi
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -54,6 +58,6 @@ jobs:
           plugin-name: query-service
           version: ${{ steps.validate.outputs.version }}
           github-token: ${{ github.token }}
-          registry-username: ${{ secrets.PLUGINS_NEXUS_USER }}
-          registry-password: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+          registry-username: ${{ inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME || secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER }}
+          registry-password: ${{ inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD || secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD }}
           target-registry: ${{ inputs.target-registry }}
