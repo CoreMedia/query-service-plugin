@@ -1,0 +1,59 @@
+name: Republish Release as OCI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Existing release version (e.g., v1.0.4 or 1.0.4)'
+        type: string
+        required: true
+      target-registry:
+        description: 'Target registry (ephemeral also publishes; it is not a dry run)'
+        type: choice
+        required: true
+        default: public
+        options:
+          - public
+          - ephemeral
+
+permissions:
+  contents: read
+
+jobs:
+  republish:
+    name: Republish existing release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate inputs and registry credentials
+        id: validate
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          TARGET_REGISTRY: ${{ inputs.target-registry }}
+          REGISTRY_USERNAME: ${{ secrets.PLUGINS_NEXUS_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+        run: |
+          VERSION="${RELEASE_VERSION#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
+            echo "::error::Version must be X.Y.Z with an optional v prefix and release suffix."
+            exit 1
+          fi
+          if [[ "$TARGET_REGISTRY" != public && "$TARGET_REGISTRY" != ephemeral ]]; then
+            echo "::error::Target registry must be public or ephemeral."
+            exit 1
+          fi
+          if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
+            echo "::error::PLUGINS_NEXUS_USER and PLUGINS_NEXUS_PASSWORD must be configured."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Republish release assets as OCI artifacts
+        uses: CoreMedia/oci-tooling/actions/republish-plugins@b55a15495088c1e272f134f5e413d1ca9e0df5ca # v0.1.0
+        with:
+          plugin-name: query-service
+          version: ${{ steps.validate.outputs.version }}
+          github-token: ${{ github.token }}
+          registry-username: ${{ secrets.PLUGINS_NEXUS_USER }}
+          registry-password: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+          target-registry: ${{ inputs.target-registry }}

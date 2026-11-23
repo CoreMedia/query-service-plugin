@@ -19,6 +19,17 @@ jobs:
       contents: write
 
     steps:
+      - name: Validate OCI registry credentials
+        if: ${{ !inputs.dry_run }}
+        env:
+          REGISTRY_USERNAME: ${{ secrets.PLUGINS_NEXUS_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+        run: |
+          if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
+            echo "::error::PLUGINS_NEXUS_USER and PLUGINS_NEXUS_PASSWORD must be configured."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -119,6 +130,20 @@ jobs:
             RESULT=$(echo "${RESULT}" | jq -r --arg APP "${APP}" --arg URL "${URL}" '.plugins[$APP] = {"url": $URL}')
           done
           echo "${RESULT}" > "target/bundle/query-service-${VERSION}.json"
+
+      - name: Build and publish OCI plugin artifacts
+        uses: CoreMedia/oci-tooling/actions/release-plugins@b55a15495088c1e272f134f5e413d1ca9e0df5ca # v0.1.0
+        with:
+          plugin-name: query-service
+          plugin-descriptor: query-service.json
+          version: ${{ steps.set-release-version.outputs.version }}
+          registry-username: ${{ secrets.PLUGINS_NEXUS_USER }}
+          registry-password: ${{ secrets.PLUGINS_NEXUS_PASSWORD }}
+          push: ${{ !inputs.dry_run }}
+
+      - name: Remove OCI build files
+        # keep them out of the next snapshot version commit
+        run: rm -rf .oci-build build-plugin.sh
 
       - name: Set Next Snapshot Version
         if: ${{ github.event.inputs.dry_run == 'false' }}
