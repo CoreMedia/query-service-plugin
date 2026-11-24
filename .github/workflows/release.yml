@@ -133,7 +133,7 @@ jobs:
 
       - name: Publish OCI plugin artifacts
         if: ${{ !inputs.dry_run }}
-        uses: CoreMedia/oci-tooling/actions/release-plugins@2f8afe189b7dfe8822102e3cc22d003401064d3d # v0.2.0
+        uses: CoreMedia/oci-tooling/actions/release-plugins@c91dc8dd03c9b6d1b0f13ee5d2cb3da42d9dc83a # v0.2.1
         with:
           plugin-name: query-service
           plugin-descriptor: query-service.json
