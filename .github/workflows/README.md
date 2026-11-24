@@ -27,6 +27,7 @@ Run **Republish Release as OCI** (`republish-release-as-oci.yml`) from the
 Actions tab on the default branch. Enter an existing release version such as
 `v3.0.0` or `3.0.0`, then select `public` (the default) or `ephemeral` for a
 trial publication. Both options push artifacts; neither is a dry run.
+Manual runs started from any other branch are skipped.
 
 The workflow uses the pinned
 [`republish-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.2.1/actions/republish-plugins).

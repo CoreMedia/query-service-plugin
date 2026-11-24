@@ -22,6 +22,9 @@ permissions:
 jobs:
   republish:
     name: Republish existing release
+    # guards against accidental runs from other branches; it does not protect
+    # the secrets (that requires an environment with a deployment branch rule)
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
