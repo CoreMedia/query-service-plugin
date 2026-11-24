@@ -53,7 +53,7 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Republish release assets as OCI artifacts
-        uses: CoreMedia/oci-tooling/actions/republish-plugins@b55a15495088c1e272f134f5e413d1ca9e0df5ca # v0.1.0
+        uses: CoreMedia/oci-tooling/actions/republish-plugins@2f8afe189b7dfe8822102e3cc22d003401064d3d # v0.2.0
         with:
           plugin-name: query-service
           version: ${{ steps.validate.outputs.version }}

@@ -16,7 +16,7 @@ When running the workflow manually on the `main` branch, a new release is create
 The version is computed by removing the `-SNAPSHOT` suffix.
 The workflow creates a tag and attaches the release artifacts to it.
 It also uses the pinned
-[`release-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.1.0/actions/release-plugins)
+[`release-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.2.0/actions/release-plugins)
 to publish the plugin ZIPs as OCI artifacts to the public registry. Dry runs
 skip this step; real releases require the registry secrets described below.
 Afterwards the next snapshot-version is created and pushed.
@@ -29,7 +29,7 @@ Actions tab on the default branch. Enter an existing release version such as
 trial publication. Both options push artifacts; neither is a dry run.
 
 The workflow uses the pinned
-[`republish-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.1.0/actions/republish-plugins).
+[`republish-plugins` action](https://github.com/CoreMedia/oci-tooling/tree/v0.2.0/actions/republish-plugins).
 It reads this repository's `v<version>` release using the built-in GitHub
 token with `contents: read`. The release must contain
 `query-service-<version>.json` with URL-based plugin entries and all ZIP
