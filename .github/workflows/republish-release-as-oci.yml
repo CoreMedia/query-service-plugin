@@ -1,0 +1,66 @@
+name: Republish Release as OCI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Existing release version (e.g., v3.0.0 or 3.0.0)'
+        type: string
+        required: true
+      target-registry:
+        description: 'Target registry (ephemeral also publishes; it is not a dry run)'
+        type: choice
+        required: true
+        default: public
+        options:
+          - public
+          - ephemeral
+
+permissions:
+  contents: read
+
+jobs:
+  republish:
+    name: Republish existing release
+    # guards against accidental runs from other branches; it does not protect
+    # the secrets (that requires an environment with a deployment branch rule)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate inputs and registry credentials
+        id: validate
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          TARGET_REGISTRY: ${{ inputs.target-registry }}
+          REGISTRY_USERNAME: ${{ (inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME) || (inputs.target-registry == 'ephemeral' && secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER) || '' }}
+          REGISTRY_PASSWORD: ${{ (inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD) || (inputs.target-registry == 'ephemeral' && secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD) || '' }}
+        run: |
+          VERSION="${RELEASE_VERSION#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
+            echo "::error::Version must be X.Y.Z with an optional v prefix and release suffix."
+            exit 1
+          fi
+          if [[ "$TARGET_REGISTRY" != public && "$TARGET_REGISTRY" != ephemeral ]]; then
+            echo "::error::Target registry must be public or ephemeral."
+            exit 1
+          fi
+          if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
+            if [[ "$TARGET_REGISTRY" == public ]]; then
+              echo "::error::NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME and NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD must be configured."
+            else
+              echo "::error::NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER and NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD must be configured."
+            fi
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Republish release assets as OCI artifacts
+        uses: CoreMedia/platform.oci-tooling/actions/republish-plugins@c91dc8dd03c9b6d1b0f13ee5d2cb3da42d9dc83a # v0.2.1
+        with:
+          plugin-name: query-service
+          version: ${{ steps.validate.outputs.version }}
+          github-token: ${{ github.token }}
+          registry-username: ${{ (inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_USERNAME) || (inputs.target-registry == 'ephemeral' && secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_USER) || '' }}
+          registry-password: ${{ (inputs.target-registry == 'public' && secrets.NEXUS_GITHUB_ACTIONS_IMAGE_RELEASES_PASSWORD) || (inputs.target-registry == 'ephemeral' && secrets.NEXUS_GITHUB_ACTIONS_INTERNAL_IMAGES_PASSWORD) || '' }}
+          target-registry: ${{ inputs.target-registry }}
